@@ -1,0 +1,19 @@
+Se tienen dos carpetas:
+
+schema --> organización del esquema utilizado en la base de datos (MySQL)
+source --> código fuente
+
+Actualmente están estos proyectos:
+
+1. EclipseLinkFromDataBaseProject
+	Proyecto que genera entidades de una base de datos
+2. EclipseLinkGenerateDataBaseProject
+	Proyecto que genera tablas en una base de datos a partir de entidades
+3. W3Schools-Laboratory
+	Proyecto que usa la BD (con entidades generades a partir de esa base de datos) de W3Schools y ejecuta consultas JPQL
+4. SQLParser
+	Proyecto de prueba para probar el parser
+5. SQLParserDemo
+	Proyecto con la librería y documentación ofrecida por la web de http://www.sqlparser.com/
+6. ZqlParser
+	Proyecto con la librería y documentación ofrecida por la web de http://zql.sourceforge.net/
