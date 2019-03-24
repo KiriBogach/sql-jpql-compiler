@@ -1,20 +1,14 @@
 package controller;
 
 import TExpressionParser.TExpressionParser;
-import elements.ArbolCondicion;
-import elements.Condicion;
 import elements.From;
 import elements.Select;
 import elements.Where;
 import gudusoft.gsqlparser.EDbVendor;
-import gudusoft.gsqlparser.EExpressionType;
-import gudusoft.gsqlparser.EJoinType;
 import gudusoft.gsqlparser.ESqlStatementType;
 import gudusoft.gsqlparser.TBaseType;
 import gudusoft.gsqlparser.TCustomSqlStatement;
 import gudusoft.gsqlparser.TGSqlParser;
-import gudusoft.gsqlparser.TSourceToken;
-import gudusoft.gsqlparser.TSourceTokenList;
 import gudusoft.gsqlparser.TStatementList;
 import gudusoft.gsqlparser.nodes.TAliasClause;
 import gudusoft.gsqlparser.nodes.TExpression;

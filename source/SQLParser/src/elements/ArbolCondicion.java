@@ -1,6 +1,7 @@
 package elements;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class ArbolCondicion {
@@ -16,18 +17,39 @@ public class ArbolCondicion {
 		ramaDerecha = new Node<Condicion>();
 	}
 
+	// Clase que representa un nodo del árbol
+	@SuppressWarnings("hiding")
+	public static class Node<Condicion> {
+		private Condicion data;
+		private Node<Condicion> parent;
+		private List<Node<Condicion>> children;
+
+		public Node() {
+			this.children = new ArrayList<>();
+		}
+
+		@Override
+		public String toString() {
+			return "Node [data=" + data + "]";
+		}
+	}
+
 	public void build(Condicion data) {
-		if (DEBUG) System.out.println("entro " + data);
+		if (DEBUG)
+			System.out.println("entro " + data);
 
 		Node<Condicion> rama = (izq) ? this.ramaIzquierda : this.ramaDerecha;
 
 		if (izq) {
-			if (DEBUG) System.out.println("rama izq");
+			if (DEBUG)
+				System.out.println("rama izq");
 		} else {
-			if (DEBUG) System.out.println("rama der");
+			if (DEBUG)
+				System.out.println("rama der");
 		}
 
-		if (DEBUG) System.out.println("llega: " + data);
+		if (DEBUG)
+			System.out.println("llega: " + data);
 		if (rama.data == null) {
 			rama.data = data;
 			return;
@@ -41,13 +63,15 @@ public class ArbolCondicion {
 		}
 
 		if (parent == null) {
-			if (DEBUG) System.out.println("padre nulo");
+			if (DEBUG)
+				System.out.println("padre nulo");
 			parent = new Node<Condicion>();
 			parent.data = data;
 			parent.children.add(ultimoHijo);
 			ultimoHijo.parent = parent;
 		} else {
-			if (DEBUG) System.out.println("padre con valor");
+			if (DEBUG)
+				System.out.println("padre con valor");
 			Node<Condicion> nuevo = new Node<Condicion>();
 			nuevo.parent = parent;
 			nuevo.data = data;
@@ -59,22 +83,6 @@ public class ArbolCondicion {
 			raiz.children.add(ramaIzquierda);
 			raiz.children.add(ramaDerecha);
 			izq = false;
-		}
-
-	}
-
-	public static class Node<Condicion> {
-		private Condicion data;
-		private Node<Condicion> parent;
-		private List<Node<Condicion>> children;
-		
-		public Node() {
-			this.children = new ArrayList<>();
-		}
-
-		@Override
-		public String toString() {
-			return "Node [data=" + data + "]";
 		}
 
 	}
@@ -100,7 +108,7 @@ public class ArbolCondicion {
 		if (ramaDerecha.data == null) {
 			return pf; // no hay rama derecha
 		}
-		pf +=  "**";
+		pf += "**";
 
 		Node<Condicion> parentDer = ramaDerecha;
 		while (parentDer != null) {
@@ -137,6 +145,44 @@ public class ArbolCondicion {
 		}
 		ultimoHijoDer.parent = ultimoHijoIzq;
 		ultimoHijoIzq.children.add(ultimoHijoDer);
+	}
+
+	public List<Condicion> iterar() {
+		LinkedList<Condicion> listaFinal = new LinkedList<>();
+
+		Node<Condicion> parentIzq = ramaIzquierda;
+		while (parentIzq != null) {
+			if (parentIzq.data.isParentesis()) {
+				// pf += "()";
+			}
+			listaFinal.add(parentIzq.data);
+			// pf += parentIzq;
+			if (parentIzq.children != null && parentIzq.children.size() > 1) {
+				listaFinal.add(parentIzq.children.get(1).data);
+			}
+
+			parentIzq = parentIzq.parent;
+		}
+
+		if (ramaDerecha.data == null) {
+			return listaFinal;
+		}
+
+		Node<Condicion> parentDer = ramaDerecha;
+		while (parentDer != null) {
+			if (parentDer.data.isParentesis()) {
+				// pf += "()";
+			}
+			listaFinal.add(parentDer.data);
+			// pf += parentIzq;
+			if (parentDer.children != null && parentDer.children.size() > 1) {
+				listaFinal.add(parentDer.children.get(1).data);
+			}
+
+			parentDer = parentDer.parent;
+		}
+
+		return listaFinal;
 	}
 
 }

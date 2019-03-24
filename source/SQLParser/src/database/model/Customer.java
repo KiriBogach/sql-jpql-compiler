@@ -29,10 +29,10 @@ public class Customer implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(unique = true, nullable = false)
-	private int customerID;
+	public int customerID;
 
 	@Column(length = 255)
-	private String customerName;
+	public String customerName;
 
 	// bi-directional many-to-one association to Order
 	@OneToMany(mappedBy = "customer")

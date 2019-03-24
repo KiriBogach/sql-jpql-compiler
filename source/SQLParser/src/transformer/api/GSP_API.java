@@ -192,14 +192,16 @@ public class GSP_API implements API {
 			
 			where.setCondiciones(parser.getArbol());
 
-			System.out.println(query.getGroupByClause());
-			System.out.println(query.getGroupByClause().getItems());
-			
-
-			System.out.println(query.getOrderbyClause());
-			System.out.println(query.getOrderbyClause().getItems());
-			
 		}
+		
+		/*
+		System.out.println(query.getGroupByClause());
+		System.out.println(query.getGroupByClause().getItems());
+		
+
+		System.out.println(query.getOrderbyClause());
+		System.out.println(query.getOrderbyClause().getItems());
+		*/
 		
 
 		//System.out.println("\n\n**\n\n");

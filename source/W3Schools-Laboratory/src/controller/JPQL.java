@@ -17,23 +17,26 @@ public class JPQL {
 	public static void main(String[] args) {
 		EntityManagerFactory emf = Persistence.createEntityManagerFactory("W3Schools-Laboratory");
 		EntityManager em = emf.createEntityManager();
-
+		
+		final String sqlQuery = "SELECT * FROM Customers WHERE (customerId = 2 and (customerId = 2 or customerName = 'pedro')) or (customerId = 3)";
+		final String jpqlQuery = "SELECT a FROM Customer a WHERE ( a.customerID = 2 and a.customerID = 2 or a.customerName = 'pedro' )or a.customerID = 3";
+		
 		// JPQL QUERY
-		TypedQuery<Customer> typedQuery = em.createQuery("SELECT c FROM Customer c", Customer.class);
+		TypedQuery<Customer> typedQuery = em.createQuery(jpqlQuery, Customer.class);
 		List<Customer> resultado = typedQuery.getResultList();
 		for (Customer customer : resultado) {
 			System.out.println(customer);
 		}
 
 		// NATIVE QUERY - MySQL
-		Query nativeQuery = em.createNativeQuery("SELECT * FROM Customers");
+		Query nativeQuery = em.createNativeQuery(sqlQuery);
 		List<Object[]> resultadoNative = nativeQuery.getResultList();
 		for (Object[] o : resultadoNative) {
 			System.out.println(Arrays.deepToString(o));
 		}
 
 		// NATIVE QUERY MAPEADA A LA ENTIDAD - MySQL
-		Query nativeQueryMapped = em.createNativeQuery("SELECT * FROM Customers", Customer.class);
+		Query nativeQueryMapped = em.createNativeQuery(sqlQuery, Customer.class);
 		List<Customer> resultadoNativeMapped = nativeQueryMapped.getResultList();
 		for (Object o : resultadoNativeMapped) {
 			System.out.println(o);
@@ -44,8 +47,10 @@ public class JPQL {
 		// Comparamos si es igual
 		if (resultado.equals(resultadoNativeMapped)) {
 			System.out.println("Resultado idéntico.");
-		} else if (resultado.containsAll(resultadoNativeMapped)) {
+		} else if (resultado.containsAll(resultadoNativeMapped) && resultadoNativeMapped.containsAll(resultado)) {
 			System.out.println("Mismo contenido, distinto orden.");
+		} else {
+			System.out.println("Resultado distinto.");
 		}
 		
 
