@@ -72,6 +72,10 @@ public class JoinRelationAnalyze {
 			}
 			JoinRelationAnalyze analysis = new JoinRelationAnalyze(new File(args[0]), EDbVendor.dbvoracle);
 			System.out.print(analysis.getAnalysisResult());
+			
+			for (JoinCondition condition : analysis.conditions) {
+				System.out.println(condition.sql);
+			}
 			// if (args.length <= 1)
 			// {
 			// Console.Read();
@@ -487,6 +491,7 @@ public class JoinRelationAnalyze {
 			// }
 			for (TExpression expr : (TExpression[]) clauseTable.keySet().toArray(new TExpression[0])) {
 				ClauseType type = (ClauseType) clauseTable.get(expr);
+				System.out.println("expr " + expr);
 				searchExpression(expr, select);
 				searchTables(select);
 

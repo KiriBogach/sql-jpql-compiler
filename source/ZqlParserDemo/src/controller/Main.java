@@ -37,7 +37,7 @@ public class Main {
 
 	@SuppressWarnings("unchecked")
 	public static void main(String args[]) {
-		final String query = "SELECT jpa.NPA.dato, 'cosas' as informe, SUM(2) from NPA where x = 1 and y = 4 and dato = (SELECT dato FROM otra); UPDATE TABLA SET HOLA = 1;";
+		final String query = "SELECT a.ASSMT_NO, b.LINK_PARAM, c.EXPL AS LINK_PG, (SELECT count() FROM GRAASPST t WHERE t.ASSMT_NO = a.ASSMT_NO AND t.ROLE != '02') AS PSN_CNT, (SELECT count() FROM GRAASPST t WHERE t.ASSMT_NO = a.ASSMT_NO AND t.ROLE != '02' AND ASSMT_FIN_YN = 'Y') AS PSN_FIN_CNT, (SELECT Avg(assmt_pts) FROM GRAASSMT t WHERE t.ASSMT_NO = a.ASSMT_NO AND t.ASSMT_TGT_SEQ_NO = a.ASSMT_TGT_SEQ_NO) AS ASSMT_PTS_AVG, a.ASSMT_RES, a.ASSMT_RPT_SUB_TITLE FROM GRAASTAT a JOIN GRAASRET b ON b.DELIB_REQ_NO = a.DELIB_REQ_NO JOIN GRTCODDT c ON c.DIV_CD = 'GR013' AND c.CD = b.DELIB_SLCT JOIN CMUSERMT d ON d.USERID = a.REGID WHERE a.ASSMT_NO = :ASSMT_NO ORDER BY a.ASSMT_TGT_SEQ_NO;";
 		try {
 
 			ZqlParser parser = new ZqlParser(new ByteArrayInputStream(query.getBytes()));
