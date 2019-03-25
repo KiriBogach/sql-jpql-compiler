@@ -9,7 +9,4 @@ public class CampoSelect extends CampoBase {
 	public CampoSelect(String nombre, String alias) {
 		super(nombre, alias);
 	}
-	
-	
-
 }

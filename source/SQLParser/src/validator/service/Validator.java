@@ -15,6 +15,7 @@ public class Validator {
 	public static final String PU_NAME = "W3Schools-Laboratory";
 	private static EntityManagerFactory emf = Persistence.createEntityManagerFactory(PU_NAME);
 
+	@SuppressWarnings("unchecked")
 	public static void validate(String sql, String jpql, boolean showResults) {
 		System.out.println("\n**********************");
 
@@ -29,7 +30,6 @@ public class Validator {
 
 		// NATIVE QUERY MAPEADA A LA ENTIDAD - MySQL
 		Query nativeQueryMapped = em.createNativeQuery(sql, Customer.class);
-		@SuppressWarnings("unchecked")
 		List<Customer> resultadoNativeMapped = nativeQueryMapped.getResultList();
 		for (Object o : resultadoNativeMapped) {
 			if (showResults) System.out.println(o);

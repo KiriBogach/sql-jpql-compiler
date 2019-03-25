@@ -1,4 +1,4 @@
-package TExpressionParser;
+package texpressionparser;
 
 import gudusoft.gsqlparser.EDbVendor;
 import gudusoft.gsqlparser.TGSqlParser;

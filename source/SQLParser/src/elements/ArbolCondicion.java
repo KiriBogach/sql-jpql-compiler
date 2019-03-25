@@ -9,6 +9,7 @@ public class ArbolCondicion {
 	private Node<Condicion> ramaIzquierda; // Rama izquierda desde abajo
 	private Node<Condicion> raiz; // Rama izquierda desde abajo
 	private Node<Condicion> ramaDerecha; // Rama derecha desde abajo
+	private Node<Condicion> ultimoInsertado = null;
 	private boolean izq = true;
 
 	public ArbolCondicion() {
@@ -69,6 +70,7 @@ public class ArbolCondicion {
 			parent.data = data;
 			parent.children.add(ultimoHijo);
 			ultimoHijo.parent = parent;
+			ultimoInsertado = parent;
 		} else {
 			if (DEBUG)
 				System.out.println("padre con valor");
@@ -76,6 +78,7 @@ public class ArbolCondicion {
 			nuevo.parent = parent;
 			nuevo.data = data;
 			parent.children.add(nuevo);
+			ultimoInsertado = nuevo;
 		}
 
 		if (data.isRoot()) {
@@ -183,6 +186,10 @@ public class ArbolCondicion {
 		}
 
 		return listaFinal;
+	}
+
+	public void setParentesisUltimoInsertado() {
+		ultimoInsertado.data.setParentesis(true);
 	}
 
 }

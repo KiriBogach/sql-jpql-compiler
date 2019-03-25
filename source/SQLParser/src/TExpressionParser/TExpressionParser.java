@@ -1,4 +1,4 @@
-package TExpressionParser;
+package texpressionparser;
 
 import elements.ArbolCondicion;
 import elements.Condicion;
@@ -9,7 +9,7 @@ import gudusoft.gsqlparser.nodes.TParseTreeNode;
 
 public class TExpressionParser implements IExpressionVisitor {
 
-	public static boolean DEBUG = false;
+	public static boolean DEBUG = true;
 	private TExpression condition;
 	private ArbolCondicion arbol;
 
@@ -42,10 +42,16 @@ public class TExpressionParser implements IExpressionVisitor {
 			root = true;
 		}
 		
-		 if (lcexpr.getOperatorToken() != null) {
+		/*if (lcexpr.getStartToken().toString().equals("(")) {
+			System.out.println("pongo marca parentesis al ultimo");
+			this.arbol.setParentesisUltimoInsertado();
+		}*/
+		
+		if (lcexpr.getOperatorToken() != null) {
+			if (DEBUG) System.out.println("ENTRO");
 			TExpression leftExpr = (TExpression) lcexpr.getLeftOperand();
 			Condicion condicion = new Condicion();
-			
+
 			if (leftExpr.getOperatorToken() != null) {
 				if (DEBUG) System.out.println("\t sin izq der");
 				if (DEBUG) System.out.println("\t token '" + lcexpr.getOperatorToken().toString() + "'");
@@ -73,17 +79,6 @@ public class TExpressionParser implements IExpressionVisitor {
 			arbol.build(condicion);
 			if (DEBUG) System.out.println();
 		}
-		/*if (is_compare_condition(lcexpr.getExpressionType())) {
-			TExpression leftExpr = (TExpression) lcexpr.getLeftOperand();
-
-			System.out.println("column: " + leftExpr.toString());
-			if (lcexpr.getComparisonOperator() != null) {
-				System.out.println("Operator: " + lcexpr.getComparisonOperator().toScript());
-			}
-			System.out.println("value: " + lcexpr.getRightOperand().toString());
-			System.out.println("");
-
-		}*/
 		return true;
 	}
 	
