@@ -17,6 +17,19 @@ public class ClassIntrospection {
 	private static final String CLASS_FILE_SUFFIX = ".class";
 	private static final String BAD_PACKAGE_ERROR = "Unable to get resources from path '%s'. Are you sure the package '%s' exists?";
 
+	public static ClaseJPA getClaseJPA(Class<?> clase) {
+		ClaseJPA claseJPA = new ClaseJPA();
+		
+		for (Field field : clase.getDeclaredFields()) {
+			Class<?> type = field.getType();
+			String name = field.getName();
+			Annotation[] annotations = field.getDeclaredAnnotations();
+			claseJPA.addAtributo(name, type, annotations);
+		}
+		
+		return claseJPA;
+	}
+
 	/*
 	 * Busca la clase cuya notación JPA tenga como nombre de tabla el parámetro
 	 * 'nombreClaseBuscada':
@@ -33,7 +46,8 @@ public class ClassIntrospection {
 				if (posNombre == -1 || posNombreFin == -1) {
 					continue;
 				}
-				String nombreColumna = annotation.toString().substring(posNombre + "Table(name=".length(), posNombreFin);
+				String nombreColumna = annotation.toString().substring(posNombre + "Table(name=".length(),
+						posNombreFin);
 				if (nombreClaseBuscada.equalsIgnoreCase(nombreColumna)) {
 					return clase;
 				}
@@ -41,9 +55,9 @@ public class ClassIntrospection {
 		}
 		return null;
 	}
-	
+
 	/*
-	 * Busca el nombre exacto del atributo JPA de una clase 
+	 * Busca el nombre exacto del atributo JPA de una clase
 	 */
 	public static String getFieldName(Class<?> clase, String nombreAtributoBuscado) {
 		nombreAtributoBuscado = Utils.eliminarReferenciaTabla(nombreAtributoBuscado);

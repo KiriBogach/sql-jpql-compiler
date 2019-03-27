@@ -9,6 +9,7 @@ import elements.ArbolCondicion;
 import elements.CampoFrom;
 import elements.CampoSelect;
 import elements.Condicion;
+import elements.Join;
 import transformer.api.GSP_API;
 import utils.Utils;
 import utils.introspection.ClassIntrospection;
@@ -24,12 +25,15 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 	private HashMap<String, Class<?>> mappingClases;
 	private List<String> fromEncontrados;
 	private HashMap<String, String> mappingAliasJPAName;
+	
+	// Variables de JOINS
+	private List<String> joinEncontrados;
 
 	// Variables del SELECT
-	List<String> selectEncontrados;
+	private List<String> selectEncontrados;
 
 	// Variables del WHERE
-	List<String> whereEncontrados;
+	private List<String> whereEncontrados;
 
 	public GSP_JPQLTransformer() {
 		super();
@@ -41,6 +45,7 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 
 		// Lista con todo lo incluido (separamos luego por ',')
 		this.fromEncontrados = new LinkedList<>();
+		this.joinEncontrados = new LinkedList<>();
 		this.selectEncontrados = new LinkedList<>();
 		this.whereEncontrados = new LinkedList<>();
 	}
@@ -62,14 +67,22 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 
 		// Mapeamos y construimos los datos
 		this.buildFrom();
+		this.buildJoin();
 		this.buildSelect();
 		this.buildWhere();
 
 		// Equivalente a implode de PHP
 		selectQuery += String.join(", ", selectEncontrados) + " ";
 		fromQuery += String.join(", ", fromEncontrados) + " ";
-		whereQuery += String.join(" ", whereEncontrados) + " ";
+		
+		if (whereEncontrados.isEmpty()) {
+			whereQuery = "";
+		} else {
+			whereQuery += String.join(" ", whereEncontrados) + " ";
+		}
 
+		fromQuery += String.join(" ", joinEncontrados) + " ";
+		
 		return (selectQuery + fromQuery + whereQuery).trim();
 	}
 
@@ -117,6 +130,8 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 			Class<?> claseBuscada = ClassIntrospection.getJPATableNameAnnotation(nombreClaseBuscada);
 			String nombreClaseJPA = claseBuscada.getSimpleName();
 
+			//ClassIntrospection.getClaseJPA(claseBuscada).printMap();
+
 			String fromString = nombreClaseJPA;
 			String aliasUsado = "";
 
@@ -139,9 +154,12 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 
 	private void buildWhere() {
 		ArbolCondicion arbolWhere = this.where.getCondiciones();
-		List<Condicion> condicionesWhere = arbolWhere.iterar();
+		if (arbolWhere == null) {
+			return;
+		}
 		
-		//boolean rootSeen = false;
+		List<Condicion> condicionesWhere = arbolWhere.iterar();
+		// boolean rootSeen = false;
 
 		for (Condicion condicion : condicionesWhere) {
 			String whereString = "";
@@ -151,10 +169,10 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 			String parteDerecha = condicion.getDerecha();
 
 			if (parteIzquierda != null) {
+				String fieldToLookup = getJPAFormat(parteIzquierda);
 				// buscar si está el atributo para diferenciar entre 'literal' vs campo bd
 				if (!parteIzquierda.contains(".")) {
 					// Si no tiene '.' no tiene alias, tendrá el nuestro
-					String fieldToLookup = getJPAFormat(parteIzquierda);
 
 					String nombreAtributoJPA = ClassIntrospection
 							.getFieldName(mappingClases.get(mappingAliasJPAName.keySet().toArray()[0]), fieldToLookup);
@@ -162,7 +180,6 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 						parteIzquierda = mappingAliasJPAName.keySet().toArray()[0] + "." + nombreAtributoJPA;
 					}
 				} else {
-					String fieldToLookup = getJPAFormat(parteIzquierda);
 					String nombreAtributoJPA = ClassIntrospection
 							.getFieldName(mappingClases.get(mappingAliasJPAName.keySet().toArray()[0]), fieldToLookup);
 					parteIzquierda = Utils.getFieldTable(fieldToLookup) + "." + nombreAtributoJPA;
@@ -175,10 +192,8 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 			whereString += operador;
 
 			if (parteDerecha != null) {
+				String fieldToLookup = getJPAFormat(parteDerecha);
 				if (!parteDerecha.contains(".")) {
-					// System.out.println("formatter: " + getJPAFormat(parteIzquierda));
-					String fieldToLookup = getJPAFormat(parteDerecha);
-
 					String nombreAtributoJPA = ClassIntrospection
 							.getFieldName(mappingClases.get(mappingAliasJPAName.keySet().toArray()[0]), fieldToLookup);
 					if (nombreAtributoJPA != null) {
@@ -188,20 +203,97 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 				whereString += " " + parteDerecha;
 			}
 
-			/*if (condicion.isParentesis()) {
-				System.out.println(condicion.toString() + " tiene parentesis");
-				if (this.whereEncontrados.size() > 0) {
-					String nuevoPrimerElemento = "( " + this.whereEncontrados.get(0);
-					this.whereEncontrados.set(0, nuevoPrimerElemento);
-					whereString = ") " + whereString;
+			/*
+			 * if (condicion.isParentesis()) { System.out.println(condicion.toString() +
+			 * " tiene parentesis"); if (this.whereEncontrados.size() > 0) { String
+			 * nuevoPrimerElemento = "( " + this.whereEncontrados.get(0);
+			 * this.whereEncontrados.set(0, nuevoPrimerElemento); whereString = ") " +
+			 * whereString; } }
+			 * 
+			 * if (condicion.isRoot()) { rootSeen = true; }
+			 */
+
+			this.whereEncontrados.add(whereString);
+		}
+	}
+	
+	public void buildJoin() {
+		for (Join join : this.from.getJoins()) {
+			String aliasCampo = join.getTable().getAlias();
+			String nombreCampo = join.getTable().getNombre();
+			// Tabla FROM del sql
+			String nombreClaseBuscada = nombreCampo;
+			
+			// Clase JPA correspondiente a la tabla
+			Class<?> claseBuscada = ClassIntrospection.getJPATableNameAnnotation(nombreClaseBuscada);
+			String nombreClaseJPA = claseBuscada.getSimpleName();
+			this.mappingClases.put(aliasCampo, claseBuscada);
+
+			String joinString = join.getTipo().name() + " JOIN ";
+			String aliasUsado = "";
+
+			if (aliasCampo == null || aliasCampo.equals("")) {
+				// Si no tiene alias, se lo asignamos nosotros
+				aliasUsado = aliasAutoIncrementado + this.diferenciador;
+				joinString += " " + aliasUsado;
+				this.aliasAutoIncrementado++;
+			} else {
+				// Si tiene alias, lo respetamos
+				aliasUsado = aliasCampo;
+				joinString += nombreClaseJPA + " " + aliasUsado;
+			}
+			
+			joinString += " ON ";
+			for (Condicion condicion : join.getCondiciones().iterar()) {
+
+				String parteIzquierda = condicion.getIzquierda();
+				String operador = condicion.getOperador();
+				String parteDerecha = condicion.getDerecha();
+
+				if (parteIzquierda != null) {
+					String fieldToLookup = getJPAFormat(parteIzquierda);
+					// buscar si está el atributo para diferenciar entre 'literal' vs campo bd
+					if (!parteIzquierda.contains(".")) {
+						// Si no tiene '.' no tiene alias, tendrá el nuestro
+
+						String nombreAtributoJPA = ClassIntrospection
+								.getFieldName(mappingClases.get(mappingAliasJPAName.keySet().toArray()[0]), fieldToLookup);
+						if (nombreAtributoJPA != null) {
+							parteIzquierda = mappingAliasJPAName.keySet().toArray()[0] + "." + nombreAtributoJPA;
+						}
+					} else {
+						String alias = Utils.getFieldTable(parteIzquierda);
+						String rawName = Utils.eliminarReferenciaTabla(parteIzquierda);
+						String nombreAtributoJPA = ClassIntrospection
+								.getFieldName(mappingClases.get(alias), rawName);
+						parteIzquierda = alias + "." + nombreAtributoJPA;
+						// tiene alias
+						// buscamos en mappingClases eses alias
+					}
+					joinString += parteIzquierda + " ";
+				}
+
+				joinString += operador;
+
+				if (parteDerecha != null) {
+					String fieldToLookup = getJPAFormat(parteDerecha);
+					if (!parteDerecha.contains(".")) {
+						// System.out.println("formatter: " + getJPAFormat(parteIzquierda));
+
+						String nombreAtributoJPA = ClassIntrospection
+								.getFieldName(mappingClases.get(mappingAliasJPAName.keySet().toArray()[0]), fieldToLookup);
+						if (nombreAtributoJPA != null) {
+							parteDerecha = mappingAliasJPAName.keySet().toArray()[0] + "." + nombreAtributoJPA;
+						}
+					}
+					joinString += " " + parteDerecha;
 				}
 			}
 			
-			if (condicion.isRoot()) {
-				rootSeen = true;
-			}*/
 
-			this.whereEncontrados.add(whereString);
+			this.mappingAliasJPAName.put(aliasUsado, nombreClaseJPA);
+			this.joinEncontrados.add(joinString);
+			this.mappingClases.put(aliasUsado, claseBuscada);
 		}
 	}
 

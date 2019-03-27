@@ -92,7 +92,7 @@ public class ArbolCondicion {
 
 	@Override
 	public String toString() {
-		String pf = "\n";
+		String pf = "";
 		Node<Condicion> parentIzq = ramaIzquierda;
 		while (parentIzq != null) {
 			if (parentIzq.data.isParentesis()) {
@@ -128,7 +128,7 @@ public class ArbolCondicion {
 			parentDer = parentDer.parent;
 		}
 
-		return pf + "\n";
+		return pf;
 	}
 
 	public void fin() {

@@ -84,12 +84,12 @@ public class GSP_API implements API {
 					TJoinItem joinItem = join.getJoinItems().getJoinItem(j);
 					
 					String type = joinItem.getJoinType().toString();
-					System.out.printf("Join type: %s\n", type);
+					/*System.out.printf("Join type: %s\n", type);
 					System.out.printf("table: %s, alias: %s\n", joinItem.getTable().toString(),
 							(joinItem.getTable().getAliasClause() != null)
 									? joinItem.getTable().getAliasClause().toString()
 									: "");
-					
+									*/					
 					//System.out.println(joinItem.getOnCondition());
 					TExpressionParser parser = new TExpressionParser(joinItem.getOnCondition());
 					parser.printColumn();
@@ -133,9 +133,9 @@ public class GSP_API implements API {
 					System.out.println(joinItem.getOnCondition().getLeftOperand().getStartToken());*/
 					
 					if (joinItem.getOnCondition() != null) {
-						System.out.printf("On: %s\n", joinItem.getOnCondition().toString());
+						//System.out.printf("On: %s\n", joinItem.getOnCondition().toString());
 					} else if (joinItem.getUsingColumns() != null) {
-						System.out.printf("using: %s\n", joinItem.getUsingColumns().toString());
+						//System.out.printf("using: %s\n", joinItem.getUsingColumns().toString());
 					}
 				}
 				break;

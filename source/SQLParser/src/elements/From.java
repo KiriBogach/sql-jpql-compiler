@@ -24,6 +24,10 @@ public class From {
 	public Collection<CampoFrom> getTables() {
 		return tables;
 	}
+	
+	public Collection<Join> getJoins() {
+		return joins;
+	}
 
 	@Override
 	public String toString() {

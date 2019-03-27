@@ -9,14 +9,15 @@ public class Cliente {
 
 	public static void main(String[] args) {
 
-		final boolean validate = true;
-		final boolean showValidateResults = true;
+		final boolean validate = false;
+		final boolean showValidateResults = false;
 		
 		JPQLTransformer transfomer = JPQLTransformerFactory.getInstance(JPQLTransformers.GSP);
 
 		String sql = "SELECT * FROM Customers WHERE (customerId = 2 and (customerId = 2 or customerName = 'pedro')) or (customerId = 3)";
-		sql = "SELECT * FROM Customers c WHERE (c.customerid = 1 and (1 = 1 or 1 = 0)) and (c.customerid = 1)";	
+		//sql = "SELECT * FROM Customers c WHERE (c.customerid = 1 and (1 = 1 or 1 = 0)) and (c.customerid = 1)";	
 		//sql = "SELECT Orders.OrderID, Customers.CustomerName, Orders.OrderDate FROM Orders INNER JOIN Customers ON Orders.CustomerID=Customers.CustomerID";
+		sql = "SELECT o.OrderID, c.CustomerName, o.OrderDate FROM Orders o INNER JOIN Customers c ON o.CustomerID=c.CustomerID";
 
 		System.out.println("SQL = '" + sql + "'\n");
 		

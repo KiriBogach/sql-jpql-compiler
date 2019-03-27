@@ -9,7 +9,7 @@ import gudusoft.gsqlparser.nodes.TParseTreeNode;
 
 public class TExpressionParser implements IExpressionVisitor {
 
-	public static boolean DEBUG = true;
+	public static boolean DEBUG = false;
 	private TExpression condition;
 	private ArbolCondicion arbol;
 
