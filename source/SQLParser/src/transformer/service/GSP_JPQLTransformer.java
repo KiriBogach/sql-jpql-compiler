@@ -130,7 +130,7 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 			Class<?> claseBuscada = ClassIntrospection.getJPATableNameAnnotation(nombreClaseBuscada);
 			String nombreClaseJPA = claseBuscada.getSimpleName();
 
-			//ClassIntrospection.getClaseJPA(claseBuscada).printMap();
+			ClassIntrospection.getClaseJPA(claseBuscada).printMap();
 
 			String fromString = nombreClaseJPA;
 			String aliasUsado = "";
