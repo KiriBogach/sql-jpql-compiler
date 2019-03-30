@@ -6,16 +6,22 @@ import java.util.List;
 
 public class ArbolCondicion {
 	public static boolean DEBUG = false;
+	private String condicion;
 	private Node<Condicion> ramaIzquierda; // Rama izquierda desde abajo
 	private Node<Condicion> raiz; // Rama izquierda desde abajo
 	private Node<Condicion> ramaDerecha; // Rama derecha desde abajo
 	private Node<Condicion> ultimoInsertado = null;
 	private boolean izq = true;
 
-	public ArbolCondicion() {
+	public ArbolCondicion(String condicion) {
 		ramaIzquierda = new Node<Condicion>();
 		raiz = new Node<Condicion>();
 		ramaDerecha = new Node<Condicion>();
+		this.condicion = condicion;
+	}
+	
+	public String getCondicion() {
+		return condicion;
 	}
 
 	// Clase que representa un nodo del árbol
@@ -95,7 +101,7 @@ public class ArbolCondicion {
 		String pf = "";
 		Node<Condicion> parentIzq = ramaIzquierda;
 		while (parentIzq != null) {
-			if (parentIzq.data.isParentesis()) {
+			if (parentIzq.data.hasParentesis()) {
 				pf += "()";
 			}
 			pf += parentIzq;
@@ -104,6 +110,7 @@ public class ArbolCondicion {
 				if (parentIzq.children.size() > 1) {
 					pf += "\t" + parentIzq.children.get(1);
 				}
+				pf += "fin_hijos";
 			}
 			parentIzq = parentIzq.parent;
 		}
@@ -115,7 +122,7 @@ public class ArbolCondicion {
 
 		Node<Condicion> parentDer = ramaDerecha;
 		while (parentDer != null) {
-			if (parentDer.data != null && parentDer.data.isParentesis()) {
+			if (parentDer.data != null && parentDer.data.hasParentesis()) {
 				pf += "()";
 			}
 			pf += parentDer;
@@ -124,6 +131,7 @@ public class ArbolCondicion {
 				if (parentDer.children.size() > 1) {
 					pf += "\t" + parentDer.children.get(1);
 				}
+				pf += "fin_hijos";
 			}
 			parentDer = parentDer.parent;
 		}
@@ -155,7 +163,8 @@ public class ArbolCondicion {
 
 		Node<Condicion> parentIzq = ramaIzquierda;
 		while (parentIzq != null) {
-			if (parentIzq.data.isParentesis()) {
+			
+			if (parentIzq.data.hasParentesis()) {
 				// pf += "()";
 			}
 			listaFinal.add(parentIzq.data);
@@ -173,7 +182,7 @@ public class ArbolCondicion {
 
 		Node<Condicion> parentDer = ramaDerecha;
 		while (parentDer != null) {
-			if (parentDer.data.isParentesis()) {
+			if (parentDer.data.hasParentesis()) {
 				// pf += "()";
 			}
 			listaFinal.add(parentDer.data);
@@ -189,7 +198,14 @@ public class ArbolCondicion {
 	}
 
 	public void setParentesisUltimoInsertado() {
-		ultimoInsertado.data.setParentesis(true);
+		if (ultimoInsertado == null || ultimoInsertado.parent == null) {
+			//System.out.println("NO ENTRO");
+			return;
+		}
+		//System.out.println("pongo marca ultimo parentesis a " + ultimoInsertado.parent);
+		//System.out.println("siguiente padre es " + ultimoInsertado.parent.parent);
+		ultimoInsertado.parent.data.setParentesis(true);
+		ultimoInsertado = ultimoInsertado.parent;
 	}
 
 }

@@ -9,5 +9,6 @@ public interface API {
 	public Select getSelect();
 	public From getFrom();
 	public Where getWhere();
+	public void reset();
 	
 }

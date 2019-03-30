@@ -42,7 +42,7 @@ public abstract class CampoBase implements Campo {
 	public String getRawNombre() {
 		int indicePunto = this.nombre.indexOf(".");
 		if (indicePunto == -1) {
-			return null;
+			return this.nombre;
 		}
 		return this.nombre.substring(indicePunto + 1, this.nombre.length());
 	}

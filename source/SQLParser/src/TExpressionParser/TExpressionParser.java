@@ -1,6 +1,8 @@
 package texpressionparser;
 
-import elements.ArbolCondicion;
+import java.util.HashSet;
+import java.util.Set;
+
 import elements.Condicion;
 import gudusoft.gsqlparser.EExpressionType;
 import gudusoft.gsqlparser.nodes.IExpressionVisitor;
@@ -11,18 +13,22 @@ public class TExpressionParser implements IExpressionVisitor {
 
 	public static boolean DEBUG = false;
 	private TExpression condition;
-	private ArbolCondicion arbol;
+	private Set<Condicion> condiciones;
 
 	public TExpressionParser(TExpression expr) {
 		this.condition = expr;
-		this.arbol = new ArbolCondicion();
+		this.condiciones = new HashSet<>();
 	}
-    
-    public void imprimir() {
-    	System.out.println(this.arbol);
-    }
 
-	public void printColumn() {
+	public String getConditionString() {
+		return this.condition.toString();
+	}
+
+	public Set<Condicion> getCondiciones() {
+		return condiciones;
+	}
+
+	public void parse() {
 		this.condition.inOrderTraverse(this);
 	}
 
@@ -34,59 +40,24 @@ public class TExpressionParser implements IExpressionVisitor {
 	// employees.id = data.id and 1 = 1
 	public boolean exprVisit(TParseTreeNode pnode, boolean pIsLeafNode) {
 		TExpression lcexpr = (TExpression) pnode;
-		if (DEBUG) System.out.println("llega: \t" + lcexpr.toString());
-		
-		boolean root = false;
-		if (lcexpr.toString().equals(this.condition.toString())) {
-			if (DEBUG) System.out.println("ROOT");
-			root = true;
-		}
-		
-		/*if (lcexpr.getStartToken().toString().equals("(")) {
-			System.out.println("pongo marca parentesis al ultimo");
-			this.arbol.setParentesisUltimoInsertado();
-		}*/
-		
+
 		if (lcexpr.getOperatorToken() != null) {
-			if (DEBUG) System.out.println("ENTRO");
-			TExpression leftExpr = (TExpression) lcexpr.getLeftOperand();
-			Condicion condicion = new Condicion();
 
-			if (leftExpr.getOperatorToken() != null) {
-				if (DEBUG) System.out.println("\t sin izq der");
-				if (DEBUG) System.out.println("\t token '" + lcexpr.getOperatorToken().toString() + "'");
-				condicion.setOperador(lcexpr.getOperatorToken().toString());
-			} else {
-				if (leftExpr.getStartToken().toString().equals("(")) {
-					// nodo con paréntesis para sus hijos
-					// (izq) operador (der)
-					if (DEBUG) System.out.println("\t ()token() '" + lcexpr.getOperatorToken().toString() + "'");
-					condicion.setOperador(lcexpr.getOperatorToken().toString());
-					condicion.setParentesis(true);
-				} else {
-					if (DEBUG) System.out.println("\t " + leftExpr);
-					TExpression rightExpr = (TExpression) lcexpr.getRightOperand();
-					if (DEBUG) System.out.println("\t token '" + lcexpr.getOperatorToken().toString() + "'");
-					if (DEBUG) System.out.println("\t " + rightExpr);
-
-					condicion.setOperador(lcexpr.getOperatorToken().toString());
-					condicion.setIzquierda(lcexpr.getLeftOperand().toScript());
-					condicion.setDerecha(lcexpr.getRightOperand().toString());
-				}
+			if (lcexpr.getStartToken().toString().equals("(") && lcexpr.getEndToken().toString().equals(")")) {
+				return true;
 			}
-			
-			condicion.setRoot(root);
-			arbol.build(condicion);
-			if (DEBUG) System.out.println();
+
+			if (lcexpr.getLeftOperand().getOperatorToken() != null || lcexpr.getRightOperand().getOperatorToken() != null) {
+				return true;
+			}
+
+			Condicion condicion = new Condicion();
+			condicion.setOperador(lcexpr.getOperatorToken().toString());
+			condicion.setIzquierda(lcexpr.getLeftOperand().toScript());
+			condicion.setDerecha(lcexpr.getRightOperand().toString());
+
+			this.condiciones.add(condicion);
 		}
 		return true;
-	}
-	
-	public ArbolCondicion getArbol() {
-		return arbol;
-	}
-
-	public void fin() {
-		this.arbol.fin();
 	}
 }

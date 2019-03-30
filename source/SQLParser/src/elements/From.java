@@ -2,6 +2,7 @@ package elements;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Set;
 
 public class From {
 
@@ -17,8 +18,8 @@ public class From {
 		this.tables.add(new CampoFrom(campo, alias));
 	}
 	
-	public void addJoin(String campo, String alias, String tipo, ArbolCondicion condiciones) {
-		this.joins.add(new Join(campo, alias, tipo, condiciones));
+	public void addJoin(String campo, String alias, String tipo, String condicionRaw, Set<Condicion> condiciones) {
+		this.joins.add(new Join(campo, alias, tipo, condicionRaw, condiciones));
 	}
 	
 	public Collection<CampoFrom> getTables() {

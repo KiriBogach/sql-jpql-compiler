@@ -17,19 +17,23 @@ public class ClassIntrospection {
 	private static final String CLASS_FILE_SUFFIX = ".class";
 	private static final String BAD_PACKAGE_ERROR = "Unable to get resources from path '%s'. Are you sure the package '%s' exists?";
 
-	public static ClaseJPA getClaseJPA(Class<?> clase) {
-		ClaseJPA claseJPA = new ClaseJPA();
+	private static List<Class<?>> clasesJPA = ClassIntrospection.find(DB_MODEL_PACKAGE);
+	
+	public static ClaseJPA getClaseJPA(String nombreClaseBuscada) {
+		Class<?> entidadJPA = ClassIntrospection.getJPATableNameAnnotation(nombreClaseBuscada);
+		Annotation[] classAnnotations = entidadJPA.getAnnotations();
+		ClaseJPA claseJPA = new ClaseJPA(entidadJPA.getSimpleName(), classAnnotations);
 		
-		for (Field field : clase.getDeclaredFields()) {
+		for (Field field : entidadJPA.getDeclaredFields()) {
 			Class<?> type = field.getType();
 			String name = field.getName();
-			Annotation[] annotations = field.getDeclaredAnnotations();
-			claseJPA.addAtributo(name, type, annotations);
+			Annotation[] fieldAnnotations = field.getDeclaredAnnotations();
+			claseJPA.addAtributo(name, type, fieldAnnotations);
 		}
 		
 		return claseJPA;
 	}
-
+	
 	/*
 	 * Busca la clase cuya notación JPA tenga como nombre de tabla el parámetro
 	 * 'nombreClaseBuscada':
@@ -37,8 +41,7 @@ public class ClassIntrospection {
 	 * @Table(name = "customers")
 	 */
 	public static Class<?> getJPATableNameAnnotation(String nombreClaseBuscada) {
-		List<Class<?>> clases = ClassIntrospection.find(DB_MODEL_PACKAGE);
-		for (Class<?> clase : clases) {
+		for (Class<?> clase : clasesJPA) {
 			Annotation[] anotaciones = clase.getAnnotations();
 			for (Annotation annotation : anotaciones) {
 				int posNombre = annotation.toString().indexOf("Table(name=");
@@ -60,7 +63,7 @@ public class ClassIntrospection {
 	 * Busca el nombre exacto del atributo JPA de una clase
 	 */
 	public static String getFieldName(Class<?> clase, String nombreAtributoBuscado) {
-		nombreAtributoBuscado = Utils.eliminarReferenciaTabla(nombreAtributoBuscado);
+		nombreAtributoBuscado = Utils.getRawColumnValue(nombreAtributoBuscado);
 		for (Field f : clase.getDeclaredFields()) {
 			if (f.getName().equalsIgnoreCase(nombreAtributoBuscado)) {
 				return f.getName();

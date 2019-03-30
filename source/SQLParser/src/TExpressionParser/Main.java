@@ -14,10 +14,7 @@ public class Main {
 		int i = sqlparser.parse();
 		if (i == 0) {
 			TExpressionParser w = new TExpressionParser(sqlparser.sqlstatements.get(0).getWhereClause().getCondition());
-			w.printColumn();
-
-			w.fin();
-			w.imprimir();
+			w.parse();
 		} else
 			System.out.println(sqlparser.getErrormessage());
 		

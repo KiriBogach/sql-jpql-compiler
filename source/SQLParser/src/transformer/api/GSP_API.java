@@ -31,6 +31,12 @@ public class GSP_API implements API {
 		this.where = new Where();
 	}
 
+	public void reset() {
+		this.select = new Select();
+		this.from = new From();
+		this.where = new Where();
+	}
+	
 	@Override
 	public void parse(String sql) {
 		TGSqlParser sqlParser = new TGSqlParser(EDbVendor.dbvmssql);
@@ -92,11 +98,16 @@ public class GSP_API implements API {
 									*/					
 					//System.out.println(joinItem.getOnCondition());
 					TExpressionParser parser = new TExpressionParser(joinItem.getOnCondition());
-					parser.printColumn();
+					parser.parse();
+					this.from.addJoin(joinItem.getTable().toString(),
+							(joinItem.getTable().getAliasClause() != null)
+									? joinItem.getTable().getAliasClause().toString()
+									: "",
+							type, joinItem.getOnCondition().toString(), parser.getCondiciones());
 
-					from.addJoin(joinItem.getTable().toString(), (joinItem.getTable().getAliasClause() != null)
+					/*from.addJoin(joinItem.getTable().toString(), (joinItem.getTable().getAliasClause() != null)
 							? joinItem.getTable().getAliasClause().toString()
-							: "", type, parser.getArbol());
+							: "", type, parser.getArbol());*/
 					
 					//joinItem.getOnCondition().getOperatorToken() 
 
@@ -188,10 +199,10 @@ public class GSP_API implements API {
 			TExpression expresion = whereClause.getCondition();
 			
 			TExpressionParser parser = new TExpressionParser(expresion);
-			parser.printColumn();
+			parser.parse();
 			
-			where.setCondiciones(parser.getArbol());
-
+			this.where.setCondiciones(parser.getCondiciones());
+			this.where.setCondicionRaw(parser.getConditionString());
 		}
 		
 		/*
