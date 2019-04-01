@@ -1,13 +1,12 @@
 package elements;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Set;
 
 public class From {
 
-	private Collection<CampoFrom> tables;
-	private Collection<Join> joins;
+	private LinkedList<CampoFrom> tables;
+	private LinkedList<Join> joins;
 
 	public From() {
 		this.tables = new LinkedList<>();
@@ -22,11 +21,11 @@ public class From {
 		this.joins.add(new Join(campo, alias, tipo, condicionRaw, condiciones));
 	}
 	
-	public Collection<CampoFrom> getTables() {
+	public LinkedList<CampoFrom> getTables() {
 		return tables;
 	}
 	
-	public Collection<Join> getJoins() {
+	public LinkedList<Join> getJoins() {
 		return joins;
 	}
 

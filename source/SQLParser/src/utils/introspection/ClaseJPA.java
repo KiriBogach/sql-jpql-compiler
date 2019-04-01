@@ -12,11 +12,11 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 public class ClaseJPA {
-	
+
 	private String nombreJPA;
 	private Annotation[] classAnnotations;
 	private Table tableAnnotation;
-	
+
 	private Map<String, AtributoClaseJPA> atributos;
 
 	public ClaseJPA(String nombre, Annotation[] classAnnotations) {
@@ -25,7 +25,7 @@ public class ClaseJPA {
 		this.classAnnotations = classAnnotations;
 		this.parseAnnotations();
 	}
-	
+
 	private void parseAnnotations() {
 		for (Annotation annotation : classAnnotations) {
 			if (annotation instanceof Table) {
@@ -33,14 +33,14 @@ public class ClaseJPA {
 			}
 		}
 	}
-	
+
 	public String getDataBaseName() {
 		if (this.tableAnnotation == null) {
 			return null;
 		}
 		return this.tableAnnotation.name();
 	}
-	
+
 	public String getNombreJPA() {
 		return nombreJPA;
 	}
@@ -69,7 +69,7 @@ public class ClaseJPA {
 	public boolean hasAtributo(String nombre) {
 		return this.atributos.containsKey(nombre);
 	}
-	
+
 	public String getAtributoWithJoinColumn(String nombre) {
 		for (Map.Entry<String, AtributoClaseJPA> atributo : atributos.entrySet()) {
 			JoinColumn joinColumn = atributo.getValue().joinColumn;
@@ -79,7 +79,7 @@ public class ClaseJPA {
 		}
 		return null;
 	}
-	
+
 	public String getAtributoID() {
 		for (Map.Entry<String, AtributoClaseJPA> atributo : atributos.entrySet()) {
 			Id id = atributo.getValue().id;

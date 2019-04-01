@@ -37,6 +37,14 @@ public class Condicion {
 	public void setDerecha(String derecha) {
 		this.derecha = derecha;
 	}
+	
+	public String getRawCondition() {
+		return this.izquierda + this.operador + this.derecha;
+	}
+	
+	public String getRawConditionRE() {
+		return this.izquierda.toUpperCase() + "\\s*" + this.operador.toUpperCase() + "\\s*" + this.derecha.toUpperCase();
+	}
 
 	@Override
 	public String toString() {

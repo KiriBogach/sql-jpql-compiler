@@ -23,6 +23,10 @@ public class ArbolCondicion {
 	public String getCondicion() {
 		return condicion;
 	}
+	
+	public Node<Condicion> getRaiz() {
+		return raiz;
+	}
 
 	// Clase que representa un nodo del árbol
 	@SuppressWarnings("hiding")
@@ -87,12 +91,12 @@ public class ArbolCondicion {
 			ultimoInsertado = nuevo;
 		}
 
-		if (data.isRoot()) {
+		/*if (data.isRoot()) {
 			raiz.data = data;
 			raiz.children.add(ramaIzquierda);
 			raiz.children.add(ramaDerecha);
 			izq = false;
-		}
+		}*/
 
 	}
 
@@ -101,9 +105,9 @@ public class ArbolCondicion {
 		String pf = "";
 		Node<Condicion> parentIzq = ramaIzquierda;
 		while (parentIzq != null) {
-			if (parentIzq.data.hasParentesis()) {
+			/*if (parentIzq.data.hasParentesis()) {
 				pf += "()";
-			}
+			}*/
 			pf += parentIzq;
 			if (parentIzq.children != null && parentIzq.children.size() > 0) {
 				pf += "hijos: \t" + parentIzq.children.get(0);
@@ -122,9 +126,9 @@ public class ArbolCondicion {
 
 		Node<Condicion> parentDer = ramaDerecha;
 		while (parentDer != null) {
-			if (parentDer.data != null && parentDer.data.hasParentesis()) {
+			/*if (parentDer.data != null && parentDer.data.hasParentesis()) {
 				pf += "()";
-			}
+			}*/
 			pf += parentDer;
 			if (parentDer.children != null && parentDer.children.size() > 0) {
 				pf += "hijos: \t" + parentDer.children.get(0);
@@ -164,9 +168,9 @@ public class ArbolCondicion {
 		Node<Condicion> parentIzq = ramaIzquierda;
 		while (parentIzq != null) {
 			
-			if (parentIzq.data.hasParentesis()) {
+			/*if (parentIzq.data.hasParentesis()) {
 				// pf += "()";
-			}
+			}*/
 			listaFinal.add(parentIzq.data);
 			// pf += parentIzq;
 			if (parentIzq.children != null && parentIzq.children.size() > 1) {
@@ -181,10 +185,10 @@ public class ArbolCondicion {
 		}
 
 		Node<Condicion> parentDer = ramaDerecha;
-		while (parentDer != null) {
+		while (parentDer != null) {/*
 			if (parentDer.data.hasParentesis()) {
 				// pf += "()";
-			}
+			}*/
 			listaFinal.add(parentDer.data);
 			// pf += parentIzq;
 			if (parentDer.children != null && parentDer.children.size() > 1) {
@@ -204,7 +208,7 @@ public class ArbolCondicion {
 		}
 		//System.out.println("pongo marca ultimo parentesis a " + ultimoInsertado.parent);
 		//System.out.println("siguiente padre es " + ultimoInsertado.parent.parent);
-		ultimoInsertado.parent.data.setParentesis(true);
+		/*ultimoInsertado.parent.data.setParentesis(true);*/
 		ultimoInsertado = ultimoInsertado.parent;
 	}
 

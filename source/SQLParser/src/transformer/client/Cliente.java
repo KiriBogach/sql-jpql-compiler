@@ -39,9 +39,24 @@ public class Cliente {
 		sql = "SELECT * FROM PRODUCTS JOIN CATEGORIES ON PRODUCTS.CATEGORYID=CATEGORIES.CATEGORYID";
 		sql = "SELECT * FROM Products p JOIN Categories c ON p.CATEGORYID=c.CATEGORYID";
 
+		sql = "SELECT p.*, c.categoryid FROM Products p LEFT JOIN Categories c ON DESCRIPTION = 'test'";
 		sql = "SELECT p.*, c.categoryid FROM Products p JOIN Categories c ON 1=1";
-		sql = "SELECT p.*, c.categoryid FROM Products p JOIN Categories c ON DESCRIPTION = 'test'";
+		sql = "SELECT p.*, c.categoryid FROM Products p JOIN Categories c ON (categoryName > 'pf') OR   p.CATEGORYID=c.CATEGORYID";
+		sql = "SELECT Orders.OrderID, Customers.CustomerName, Shippers.ShipperName " 
+				+ "FROM Orders "
+				+ "INNER JOIN Customers ON Orders.CustomerID = Customers.CustomerID "
+				+ "INNER JOIN Shippers ON Orders.ShipperID = Shippers.ShipperID "
+				+ "ORDER BY Orders.OrderID DESC, CustomerName";
 		
+		sql = "SELECT COUNT(CustomerID), Country " 
+				+ "FROM Customers " 
+				+ "GROUP BY Country";
+		
+		sql = "SELECT CustomerID, Country " 
+				+ "FROM Customers " 
+				+ "GROUP BY Country "
+				+ "HAVING CustomerID > 5 "
+				+ "ORDER BY COUNT(CustomerID) DESC";
 
 		System.out.println("SQL  => " + sql + "\n");
 		

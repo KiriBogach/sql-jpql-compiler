@@ -70,6 +70,41 @@ public class ClienteMultiple {
 		
 		sql = "SELECT * FROM Products p JOIN Categories c ON p.CATEGORYID=c.CATEGORYID";
 		queries.put(sql, null);
+		
+		sql = "SELECT p.*, c.categoryid FROM Products p LEFT JOIN Categories c ON DESCRIPTION = 'test'";
+		queries.put(sql, null);
+		
+		sql = "SELECT p.*, c.categoryid FROM Products p JOIN Categories c ON 1=1";
+		queries.put(sql, null);
+		
+		sql = "SELECT p.*, c.categoryid FROM Products p JOIN Categories c ON (categoryName > 'pf') OR   p.CATEGORYID=c.CATEGORYID";
+		queries.put(sql, null);
+		
+		sql = "SELECT Orders.OrderID, Customers.CustomerName, Shippers.ShipperName " 
+				+ "FROM Orders "
+				+ "INNER JOIN Customers ON Orders.CustomerID = Customers.CustomerID "
+				+ "INNER JOIN Shippers ON Orders.ShipperID = Shippers.ShipperID "
+				+ "ORDER BY Orders.OrderID DESC, CustomerName";
+		queries.put(sql, null);
+		
+		sql = "SELECT COUNT(CustomerID), Country " 
+				+ "FROM Customers " 
+				+ "GROUP BY Country";
+		queries.put(sql, null);
+		
+		sql = "SELECT COUNT(CustomerID), Country " 
+				+ "FROM Customers " 
+				+ "GROUP BY Country "
+				+ "HAVING COUNT(CustomerID) > 5 " 
+				+ "ORDER BY COUNT(CustomerID) DESC";
+		queries.put(sql, null);
+		
+		sql = "SELECT CustomerID, Country " 
+				+ "FROM Customers " 
+				+ "GROUP BY Country "
+				+ "HAVING CustomerID > 5 "
+				+ "ORDER BY COUNT(CustomerID) DESC";
+		queries.put(sql, null);
 
 		for (Map.Entry<String, String> pair : queries.entrySet()) {
 			pair.setValue(transfomer.transform(pair.getKey()));
