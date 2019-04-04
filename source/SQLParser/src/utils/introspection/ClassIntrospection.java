@@ -21,14 +21,10 @@ public class ClassIntrospection {
 	
 	public static ClaseJPA getClaseJPA(String nombreClaseBuscada) {
 		Class<?> entidadJPA = ClassIntrospection.getJPATableNameAnnotation(nombreClaseBuscada);
-		Annotation[] classAnnotations = entidadJPA.getAnnotations();
-		ClaseJPA claseJPA = new ClaseJPA(entidadJPA.getSimpleName(), classAnnotations);
+		ClaseJPA claseJPA = new ClaseJPA(entidadJPA);
 		
 		for (Field field : entidadJPA.getDeclaredFields()) {
-			Class<?> type = field.getType();
-			String name = field.getName();
-			Annotation[] fieldAnnotations = field.getDeclaredAnnotations();
-			claseJPA.addAtributo(name, type, fieldAnnotations);
+			claseJPA.addAtributo(field);
 		}
 		
 		return claseJPA;

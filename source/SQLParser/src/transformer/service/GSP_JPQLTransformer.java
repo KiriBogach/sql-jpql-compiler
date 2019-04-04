@@ -18,6 +18,7 @@ import javafx.util.Pair;
 import transformer.api.GSP_API;
 import utils.Utils;
 import utils.introspection.ClaseJPA;
+import utils.introspection.ClaseJPA.AtributoClaseJPA;
 import utils.introspection.ClassIntrospection;
 
 public class GSP_JPQLTransformer extends JPQLTransformerBase {
@@ -212,13 +213,11 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 
 			// Buscamos la relación concreta no presente en los atributos
 			// sino por objetos JPA
-			Pair<String, Condicion> relacionObjetual = this.getRelationCondicition(condiciones);
+			Pair<String, Condicion> relacionObjetual = this.getRelationCondicition(join, claseJPA);
 			if (relacionObjetual != null) {
 				// Falta ver las demás condiciones JOIN p.category c ON ...
 				condiciones.remove(relacionObjetual.getValue());
 				String onCondition = parseCondicionExpressions(condiciones, join.getCondicionRaw());
-				// System.out.println(onCondition);
-				// System.out.println(relacionObjetual.getValue().getRawConditionRE());
 				onCondition = Utils.reemplazarYNormalizar(onCondition, relacionObjetual.getValue().getRawConditionRE());
 
 				if (!onCondition.isEmpty()) {
@@ -246,7 +245,7 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 		for (CampoSelect campoSelect : selectFields) {
 
 			String aliasCampo = campoSelect.getAlias(); // customerId as (identificador)
-			//String nombreCampo = campoSelect.getNombre(); // (customerId)
+			// String nombreCampo = campoSelect.getNombre(); // (customerId)
 			String tablaReferida = campoSelect.getTableReference(); // (c).customerId
 			String nombreRaw = campoSelect.getRawNombre(); // c.(customerId)
 
@@ -366,38 +365,58 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 		}
 	}
 
-	private Pair<String, Condicion> getRelationCondicition(Set<Condicion> condiciones) {
+	// El parámetro claseFrom es la clase a la que se le está haciendo el JOIN
+	private Pair<String, Condicion> getRelationCondicition(Join join, ClaseJPA claseFrom) {
+		Set<Condicion> condiciones = join.getCondiciones();
+
 		for (Condicion condicion : condiciones) {
-			String parteIzquierda = condicion.getIzquierda();
-			String parteDerecha = condicion.getDerecha();
-			String condicionParseadaIzquierda = this.parseCondition(parteIzquierda);
-			String condicionParseadaDerecha = this.parseCondition(parteDerecha);
+			String condicionParseadaIzquierda = this.parseCondition(condicion.getIzquierda());
+			String condicionParseadaDerecha = this.parseCondition(condicion.getDerecha());
 			String referenciaIzquierda = Utils.getOnlyFieldTable(condicionParseadaIzquierda);
 			String referenciaDerecha = Utils.getOnlyFieldTable(condicionParseadaDerecha);
 			String campoIzquierda = Utils.getRawColumnValue(condicionParseadaIzquierda);
 			String campoDerecha = Utils.getRawColumnValue(condicionParseadaDerecha);
 
+			String campoValor;
+			String referenciaNull;
+			String refecenciaValor;
+
 			if (campoIzquierda == null || campoIzquierda.isEmpty() || campoIzquierda.equalsIgnoreCase("null")) {
-				ClaseJPA claseDerecha = this.mappingAliasClase.get(referenciaDerecha);
-				if (claseDerecha.getAtributoID().equalsIgnoreCase(campoDerecha)) {
-					// buscamos algo de la primera clase (que tiene null) de la segunda clase
-					ClaseJPA claseIzquierda = this.mappingAliasClase.get(referenciaIzquierda);
-					claseIzquierda.getAtributoWithJoinColumn(claseDerecha.getAtributoID());
-					String joinResult = "JOIN " + referenciaIzquierda + "."
-							+ claseIzquierda.getAtributoWithJoinColumn(claseDerecha.getAtributoID()) + " "
-							+ referenciaDerecha;
-					return new Pair<String, Condicion>(joinResult, condicion);
-				}
+				campoValor = campoDerecha;
+				referenciaNull = referenciaIzquierda;
+				refecenciaValor = referenciaDerecha;
 			} else if (campoDerecha == null || campoDerecha.isEmpty() || campoDerecha.equalsIgnoreCase("null")) {
-				ClaseJPA claseIzquierda = this.mappingAliasClase.get(referenciaIzquierda);
-				if (claseIzquierda.getAtributoID().equalsIgnoreCase(campoIzquierda)) {
-					// buscamos algo de la primera clase (que tiene null) de la segunda clase
-					ClaseJPA claseDerecha = this.mappingAliasClase.get(referenciaDerecha);
-					claseIzquierda.getAtributoWithJoinColumn(claseDerecha.getAtributoID());
-					String joinResult = "JOIN " + referenciaDerecha + "."
-							+ claseDerecha.getAtributoWithJoinColumn(claseIzquierda.getAtributoID()) + " "
-							+ referenciaIzquierda;
-					return new Pair<String, Condicion>(joinResult, condicion);
+				campoValor = campoIzquierda;
+				referenciaNull = referenciaDerecha;
+				refecenciaValor = referenciaIzquierda;
+			} else {
+				continue;
+			}
+
+			//System.out.println("campoValor: " + campoValor);
+			//System.out.println("referenciaNull: " + referenciaNull);
+			//System.out.println("refecenciaValor: " + refecenciaValor);
+
+			ClaseJPA claseValor = this.mappingAliasClase.get(refecenciaValor);
+			if (claseValor.getAtributoID().equalsIgnoreCase(campoValor)) {
+				ClaseJPA claseNull = this.mappingAliasClase.get(referenciaNull);
+
+				AtributoClaseJPA atributoNull = claseNull.getAtributoWithJoinColumn(claseValor.getAtributoID());
+				if (atributoNull.getManyToOne() != null) {
+					if (claseValor.getClaseReferenciada().equals(atributoNull.getTipo())) {
+						AtributoClaseJPA atributoDerecha = claseValor.getAtributoMappedBy(atributoNull.getNombre());
+
+						TipoJoin tipoJoin = join.getTipo();
+						String tipoJoinString = tipoJoin.toString() + (tipoJoin.equals(TipoJoin.JOIN) ? "" : " JOIN");
+						String joinResult = tipoJoinString + " ";
+
+						if (claseFrom.equals(claseNull)) {
+							joinResult += refecenciaValor + "." + atributoDerecha.getNombre() + " " + referenciaNull;
+						} else {
+							joinResult += referenciaNull + "." + atributoNull.getNombre() + " " + refecenciaValor;
+						}
+						return new Pair<String, Condicion>(joinResult, condicion);
+					}
 				}
 			}
 		}
@@ -420,6 +439,9 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 	}
 
 	private Pair<String, String> getTableFromAtributo(ClaseJPA claseJPA, String atributoBuscado) {
+		if (claseJPA == null || atributoBuscado == null) {
+			return null;
+		}
 		String atributoNormalizado = getJPAFormat(atributoBuscado);
 		String atributoEnClase = claseJPA.getAttributeRealName(atributoNormalizado);
 		if (atributoEnClase != null) {

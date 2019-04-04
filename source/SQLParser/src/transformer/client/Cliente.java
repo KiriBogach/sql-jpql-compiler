@@ -41,12 +41,7 @@ public class Cliente {
 
 		sql = "SELECT p.*, c.categoryid FROM Products p LEFT JOIN Categories c ON DESCRIPTION = 'test'";
 		sql = "SELECT p.*, c.categoryid FROM Products p JOIN Categories c ON 1=1";
-		sql = "SELECT p.*, c.categoryid FROM Products p JOIN Categories c ON (categoryName > 'pf') OR   p.CATEGORYID=c.CATEGORYID";
-		sql = "SELECT Orders.OrderID, Customers.CustomerName, Shippers.ShipperName " 
-				+ "FROM Orders "
-				+ "INNER JOIN Customers ON Orders.CustomerID = Customers.CustomerID "
-				+ "INNER JOIN Shippers ON Orders.ShipperID = Shippers.ShipperID "
-				+ "ORDER BY Orders.OrderID DESC, CustomerName";
+		
 		
 		sql = "SELECT COUNT(CustomerID), Country " 
 				+ "FROM Customers " 
@@ -56,7 +51,13 @@ public class Cliente {
 				+ "FROM Customers " 
 				+ "GROUP BY Country "
 				+ "HAVING CustomerID > 5 "
-				+ "ORDER BY COUNT(CustomerID) DESC";
+				+ "ORDER BY CustomerID DESC";
+		
+		sql = "SELECT p.*, c.categoryid FROM Products p JOIN Categories c ON (categoryName > 'pf') OR   p.CATEGORYID=c.CATEGORYID";
+		sql = "SELECT * FROM employees " 
+				+ "LEFT JOIN orders ON orders.EmployeeID = employees.EmployeeID";
+		sql = "SELECT * FROM orders o " 
+				+ "LEFT JOIN employees e ON o.EmployeeID = e.EmployeeID";
 
 		System.out.println("SQL  => " + sql + "\n");
 		

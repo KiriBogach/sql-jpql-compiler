@@ -1,6 +1,7 @@
 package utils.introspection;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
@@ -13,16 +14,17 @@ import javax.persistence.Table;
 
 public class ClaseJPA {
 
-	private String nombreJPA;
+	private Class<?> claseReferenciada;
+	private Map<String, AtributoClaseJPA> atributos;
 	private Annotation[] classAnnotations;
+	private String nombreJPA;
 	private Table tableAnnotation;
 
-	private Map<String, AtributoClaseJPA> atributos;
-
-	public ClaseJPA(String nombre, Annotation[] classAnnotations) {
-		this.nombreJPA = nombre;
+	public ClaseJPA(Class<?> entidadJPA) {
+		this.claseReferenciada = entidadJPA;
+		this.nombreJPA = entidadJPA.getSimpleName();
+		this.classAnnotations = entidadJPA.getAnnotations();
 		this.atributos = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-		this.classAnnotations = classAnnotations;
 		this.parseAnnotations();
 	}
 
@@ -32,6 +34,57 @@ public class ClaseJPA {
 				this.tableAnnotation = (Table) annotation;
 			}
 		}
+	}
+
+	public Class<?> getClaseReferenciada() {
+		return claseReferenciada;
+	}
+
+	public void addAtributo(Field field) { // String nombre, Class<?> tipo, Annotation[] annotations) {
+		this.atributos.put(field.getName(), new AtributoClaseJPA(field));
+	}
+
+	public Annotation[] getAnnotationsAtributo(String nombre) {
+		return this.atributos.get(nombre).getAnnotations();
+	}
+
+	public String getAtributoID() {
+		for (Map.Entry<String, AtributoClaseJPA> atributo : atributos.entrySet()) {
+			Id id = atributo.getValue().id;
+			if (id != null) {
+				return atributo.getKey();
+			}
+		}
+		return null;
+	}
+
+	public AtributoClaseJPA getAtributoWithJoinColumn(String nombre) {
+		for (Map.Entry<String, AtributoClaseJPA> atributo : atributos.entrySet()) {
+			JoinColumn joinColumn = atributo.getValue().joinColumn;
+			if (joinColumn != null && joinColumn.name().equalsIgnoreCase(nombre)) {
+				return atributo.getValue();
+			}
+		}
+		return null;
+	}
+	
+	public AtributoClaseJPA getAtributoMappedBy(String nombre) {
+		for (Map.Entry<String, AtributoClaseJPA> atributo : atributos.entrySet()) {
+			OneToMany oneToMany = atributo.getValue().oneToMany;
+			if (oneToMany != null && oneToMany.mappedBy().equalsIgnoreCase(nombre)) {
+				return atributo.getValue();
+			}
+		}
+		return null;
+	}
+
+	public String getAttributeRealName(String nombre) {
+		for (String atributo : this.atributos.keySet()) {
+			if (atributo.equalsIgnoreCase(nombre)) {
+				return atributo;
+			}
+		}
+		return null;
 	}
 
 	public String getDataBaseName() {
@@ -45,49 +98,12 @@ public class ClaseJPA {
 		return nombreJPA;
 	}
 
-	public String getAttributeRealName(String nombre) {
-		for (String atributo : this.atributos.keySet()) {
-			if (atributo.equalsIgnoreCase(nombre)) {
-				return atributo;
-			}
-		}
-		return null;
-	}
-
-	public void addAtributo(String nombre, Class<?> tipo, Annotation[] annotations) {
-		this.atributos.put(nombre, new AtributoClaseJPA(tipo, annotations));
-	}
-
 	public Class<?> getTipoAtributo(String nombre) {
 		return this.atributos.get(nombre).getTipo();
 	}
 
-	public Annotation[] getAnnotationsAtributo(String nombre) {
-		return this.atributos.get(nombre).getAnnotations();
-	}
-
 	public boolean hasAtributo(String nombre) {
 		return this.atributos.containsKey(nombre);
-	}
-
-	public String getAtributoWithJoinColumn(String nombre) {
-		for (Map.Entry<String, AtributoClaseJPA> atributo : atributos.entrySet()) {
-			JoinColumn joinColumn = atributo.getValue().joinColumn;
-			if (joinColumn != null && joinColumn.name().equalsIgnoreCase(nombre)) {
-				return atributo.getKey();
-			}
-		}
-		return null;
-	}
-
-	public String getAtributoID() {
-		for (Map.Entry<String, AtributoClaseJPA> atributo : atributos.entrySet()) {
-			Id id = atributo.getValue().id;
-			if (id != null) {
-				return atributo.getKey();
-			}
-		}
-		return null;
 	}
 
 	@Override
@@ -95,17 +111,19 @@ public class ClaseJPA {
 		return "ClaseJPA [nombre=" + nombreJPA + ", atributos=" + atributos + "]";
 	}
 
-	private class AtributoClaseJPA {
-		private Class<?> tipo;
+	public class AtributoClaseJPA {
+		private String nombre;
 		private Annotation[] annotations;
-		private ManyToOne manyToOne;
-		private JoinColumn joinColumn;
-		private OneToMany oneToMany;
 		private Id id;
+		private JoinColumn joinColumn;
+		private ManyToOne manyToOne;
+		private OneToMany oneToMany;
+		private Class<?> tipo;
 
-		public AtributoClaseJPA(Class<?> tipo, Annotation[] annotations) {
-			this.tipo = tipo;
-			this.annotations = annotations;
+		public AtributoClaseJPA(Field field) { 
+			this.nombre = field.getName();
+			this.tipo = field.getType();
+			this.annotations = field.getDeclaredAnnotations();
 			this.parseAnnotations();
 		}
 
@@ -123,12 +141,36 @@ public class ClaseJPA {
 			}
 		}
 
-		public Class<?> getTipo() {
-			return tipo;
+		public String getNombre() {
+			return nombre;
 		}
 
 		public Annotation[] getAnnotations() {
 			return annotations;
+		}
+
+		public Id getId() {
+			return id;
+		}
+
+		public JoinColumn getJoinColumn() {
+			return joinColumn;
+		}
+
+		public ManyToOne getManyToOne() {
+			return manyToOne;
+		}
+
+		public OneToMany getOneToMany() {
+			return oneToMany;
+		}
+
+		public Class<?> getTipo() {
+			return tipo;
+		}
+
+		public void setTipo(Class<?> tipo) {
+			this.tipo = tipo;
 		}
 
 		@Override
