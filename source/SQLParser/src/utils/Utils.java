@@ -30,4 +30,13 @@ public class Utils {
 		cadenaBuscada = cadenaBuscada.replace(" ", "\\s*");
 		return condiciones.replaceAll("(AND|OR|XOR|NOT)?\\s*" + cadenaBuscada + "\\s*(AND|OR|XOR|NOT)?", "");
 	}
+	
+	public static String reemplazarSinLiterales(String cadena, String sustitucion, String sustituto) {
+		// Expresión regular que coge todas las coincidencias menos las que tengan 
+		// comillas como 'sustitucion' o .sustitucion
+		//System.out.println("cad:" + cadena);
+		//System.out.println("sus:" + sustitucion);
+		String re = "(?<!')(?<!\\.)" + sustitucion + "(?!')"; 
+		return cadena.replaceAll(re, sustituto);
+	}
 }

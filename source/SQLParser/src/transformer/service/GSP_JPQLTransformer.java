@@ -2,8 +2,8 @@ package transformer.service;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -393,9 +393,9 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 				continue;
 			}
 
-			//System.out.println("campoValor: " + campoValor);
-			//System.out.println("referenciaNull: " + referenciaNull);
-			//System.out.println("refecenciaValor: " + refecenciaValor);
+			// System.out.println("campoValor: " + campoValor);
+			// System.out.println("referenciaNull: " + referenciaNull);
+			// System.out.println("refecenciaValor: " + refecenciaValor);
 
 			ClaseJPA claseValor = this.mappingAliasClase.get(refecenciaValor);
 			if (claseValor.getAtributoID().equalsIgnoreCase(campoValor)) {
@@ -475,13 +475,11 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 				referencia = this.getExactMappingAlias(referencia);
 
 				Pair<String, String> aliasNombreReal = getTableFromAtributo(claseJPA, rawColumn);
-				// System.out.println(aliasNombreReal);
 				if (aliasNombreReal != null) {
 					resultado += referencia + "." + aliasNombreReal.getValue();
 				} else {
 					resultado += referencia + ".null";
 				}
-				// System.out.println(resultado);
 			}
 		} else if (condicion.contains("(") && condicion.contains(")")) {
 			// Con '(' y ')', es decir, con una función
@@ -518,43 +516,42 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 	}
 
 	private String parseCondicionExpressions(Set<Condicion> condiciones, String rawExpression) {
-		List<String> condionesToChange = new LinkedList<>();
+		//System.out.println(condiciones);
+		//System.out.println(rawExpression + "\n\n");
+
+		Set<String> condionesToChange = new HashSet<>();
 		for (Condicion condicion : condiciones) {
 			String parteIzquierda = condicion.getIzquierda();
 			String parteDerecha = condicion.getDerecha();
 			if (parteIzquierda != null && !parteIzquierda.isEmpty()) {
 				// Para literales y LIKE ('valores')
-				if (parteIzquierda.startsWith("'") || parteIzquierda.startsWith("(")) {
+				if (!parteIzquierda.startsWith("'") && !parteIzquierda.startsWith("(")
+						&& !this.isNumeric(parteIzquierda)) {
 					condionesToChange.add(parteIzquierda);
-				} else {
-					condionesToChange.add(parteIzquierda.toUpperCase());
 				}
 			}
 			if (parteDerecha != null && !parteDerecha.isEmpty()) {
-				// Para literales y LIKE ('valores')
-				if (parteDerecha.startsWith("'") || parteDerecha.startsWith("(")) {
+				if (!parteDerecha.startsWith("'") && !parteDerecha.startsWith("(") && !this.isNumeric(parteDerecha)) {
 					condionesToChange.add(parteDerecha);
-				} else {
-					condionesToChange.add(parteDerecha.toUpperCase());
 				}
 			}
 		}
 
-		// Ponemos primero los que tienen alias o referencia a su tabla
-		condionesToChange.sort((s1, s2) -> s1.contains(".") && !s2.contains(".") ? -1 : 1);
-
-		String treatedWhereString = rawExpression.toUpperCase();
+		//System.out.println(condionesToChange);
+		String treatedWhereString = rawExpression;
+		//System.out.println("treatedWhereString:" + treatedWhereString);
 		for (String condicion : condionesToChange) {
-			if (condicion.startsWith("'") || condicion.startsWith("(")) {
-				treatedWhereString = treatedWhereString.replace(condicion.toUpperCase(), condicion);
-				continue;
-			}
+
+			// Si la condicion parseada es igual a la condición original,
+			// no hacemos sustitución; ejemplo un literal
 			String condicionParseada = this.parseCondition(condicion);
+			//System.out.println("condicion:" + condicion);
+			//System.out.println("condicionParseada:" + condicionParseada);
 			if (condicion.equals(condicionParseada)) {
 				continue;
 			}
 
-			treatedWhereString = treatedWhereString.replace(condicion, this.parseCondition(condicion));
+			treatedWhereString = Utils.reemplazarSinLiterales(treatedWhereString, condicion, this.parseCondition(condicion));
 		}
 
 		return treatedWhereString;
@@ -586,6 +583,10 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 					String.valueOf(Character.toUpperCase(phrase.charAt(phrase.indexOf("_") + 1))));
 		}
 		return phrase;
+	}
+
+	private boolean isNumeric(String str) {
+		return str.matches("-?\\d+(\\.\\d+)?"); // match a number with optional '-' and decimal.
 	}
 
 }

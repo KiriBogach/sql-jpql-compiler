@@ -58,7 +58,12 @@ public class Cliente {
 				+ "LEFT JOIN orders ON orders.EmployeeID = employees.EmployeeID";
 		sql = "SELECT * FROM orders o " 
 				+ "LEFT JOIN employees e ON o.EmployeeID = e.EmployeeID";
+		
+		sql = "SELECT ProductName FROM Products p WHERE p.ProductID = 2 OR 1 = 'ProductID' AND Products.producTiD = ANY (SELECT productId FROM OrderDetails WHERE Quantity = 10)";
 
+		sql= "SELECT * FROM Customers c, Orders o WHERE (c.cuStoMerid = 2 and (orders.OrderID = 2 or o.OrderID = 'pedro')) or (Customers.cuStomerId = 3) or (orderID = '2') or (orderID IN (1,'ab'))";
+		
+		sql = "SELECT p.*, c.categoryid FROM Products p JOIN Categories c ON (categoryName > 'pf') OR   p.CATEGORYID=c.CATEGORYID";
 		System.out.println("SQL  => " + sql + "\n");
 		
 		String jpql = transfomer.transform(sql);

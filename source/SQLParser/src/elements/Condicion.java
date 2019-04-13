@@ -43,7 +43,7 @@ public class Condicion {
 	}
 	
 	public String getRawConditionRE() {
-		return this.izquierda.toUpperCase() + "\\s*" + this.operador.toUpperCase() + "\\s*" + this.derecha.toUpperCase();
+		return this.izquierda + "\\s*" + this.operador + "\\s*" + this.derecha;
 	}
 
 	@Override
