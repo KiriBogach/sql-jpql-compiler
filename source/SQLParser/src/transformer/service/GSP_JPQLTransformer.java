@@ -11,15 +11,22 @@ import java.util.TreeMap;
 import elements.CampoFrom;
 import elements.CampoSelect;
 import elements.Condicion;
+import elements.FuncionParser;
 import elements.Having;
 import elements.Join;
 import elements.TipoJoin;
 import javafx.util.Pair;
 import transformer.api.GSP_API;
+import transformer.factory.JPQLTransformerFactory;
+import transformer.factory.JPQLTransformers;
 import utils.Utils;
 import utils.introspection.ClaseJPA;
 import utils.introspection.ClaseJPA.AtributoClaseJPA;
 import utils.introspection.ClassIntrospection;
+
+// (?) Sutituir javafx.util.Pair por 
+// https://stackoverflow.com/questions/521171/a-java-collection-of-value-pairs-tuples
+// AbstractMap.SimpleEntry
 
 public class GSP_JPQLTransformer extends JPQLTransformerBase {
 
@@ -271,8 +278,6 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 				continue;
 			}
 
-			// if (tablaReferida == null || tablaReferida.isEmpty()) {
-
 			/*
 			 * Hay que buscar en todas las tablas del FROM el campo (tiene que estar en
 			 * alguno de los dos, sino habría colisión y la query estaría mal).
@@ -280,33 +285,8 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 			 * Recorremos, pues, todas las clases del FROM:
 			 */
 
-			if (nombreRaw.contains("(") && nombreRaw.contains(")")) {
-				// Con '(' y ')', es decir, con una función
-				// Por ahora eliminamos la función
-				int comienzoParentesis = nombreRaw.indexOf("(");
-				int finParentesis = nombreRaw.indexOf(")");
-				nombreRaw = nombreRaw.substring(comienzoParentesis + 1, finParentesis);
-				Pair<String, String> aliasNombreReal = getTableFromAtributo(nombreRaw);
-
-				if (aliasNombreReal != null) {
-					// Tenemos un campo de BD
-					selectFormado += aliasNombreReal.getKey() + "." + aliasNombreReal.getValue();
-				} else {
-					// Es un literal
-					selectFormado += nombreRaw;
-				}
-			} else {
-				Pair<String, String> aliasNombreReal = getTableFromAtributo(nombreRaw);
-				if (aliasNombreReal != null) {
-					selectFormado = aliasNombreReal.getKey() + "." + aliasNombreReal.getValue();
-				}
-
-				if (aliasCampo != null && !aliasCampo.isEmpty()) {
-					selectFormado += " as " + aliasCampo;
-				}
-			}
-
-			this.selectEncontrados.add(this.parseCondition(nombreRaw));
+			String campoParseado = this.parseCondition(nombreRaw, aliasCampo);
+			this.selectEncontrados.add(campoParseado);
 		}
 	}
 
@@ -425,7 +405,7 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 	}
 
 	private Pair<String, String> getTableFromAtributo(String atributoBuscado) {
-		String atributoNormalizado = getJPAFormat(atributoBuscado);
+		String atributoNormalizado = Utils.getJPAFormat(atributoBuscado);
 		for (Map.Entry<String, ClaseJPA> claseBuscada : this.mappingAliasClase.entrySet()) {
 			String alias = claseBuscada.getKey();
 			ClaseJPA clase = claseBuscada.getValue();
@@ -442,7 +422,7 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 		if (claseJPA == null || atributoBuscado == null) {
 			return null;
 		}
-		String atributoNormalizado = getJPAFormat(atributoBuscado);
+		String atributoNormalizado = Utils.getJPAFormat(atributoBuscado);
 		String atributoEnClase = claseJPA.getAttributeRealName(atributoNormalizado);
 		if (atributoEnClase != null) {
 			return new Pair<>("", atributoEnClase);
@@ -482,20 +462,37 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 				}
 			}
 		} else if (condicion.contains("(") && condicion.contains(")")) {
-			// Con '(' y ')', es decir, con una función
-			// Por ahora eliminamos la función
-			int comienzoParentesis = condicion.indexOf("(");
-			int finParentesis = condicion.indexOf(")");
-			condicion = condicion.substring(comienzoParentesis + 1, finParentesis);
-			Pair<String, String> aliasNombreReal = getTableFromAtributo(condicion);
+			// Con '(' y ')'
 
-			if (aliasNombreReal != null) {
-				// Tenemos un campo de BD
-				resultado += aliasNombreReal.getKey() + "." + aliasNombreReal.getValue();
-			} else {
-				// Es un literal
-				resultado += condicion;
+			// Si encontramos una subquery la parseamos y la devolvemos
+			if (Utils.isSubquery(condicion)) {
+				String subqueryParseada = JPQLTransformerFactory.getInstance(JPQLTransformers.GSP).transform(condicion);
+				return Utils.addParentesis(subqueryParseada); //this.transform(condicion);
 			}
+			
+			// Si empieza y acaba con paréntesis tenemos IN (2, 'abc') ...
+			if (condicion.startsWith("(") && condicion.endsWith(")")) {
+				int comienzoParentesis = condicion.indexOf("(");
+				int finParentesis = condicion.indexOf(")");
+				condicion = condicion.substring(comienzoParentesis + 1, finParentesis);
+				Pair<String, String> aliasNombreReal = getTableFromAtributo(condicion);
+
+				if (aliasNombreReal != null) {
+					// Tenemos un campo de BD
+					resultado += aliasNombreReal.getKey() + "." + aliasNombreReal.getValue();
+				} else {
+					// Es un literal
+					resultado += condicion;
+				}
+				return Utils.addParentesis(resultado);
+			}
+
+			// Si encontramos una función de agregación ...
+			String agregatteFunction = this.parseAgregatteFunction(condicion);
+			if (agregatteFunction != null) {
+				return agregatteFunction;
+			}
+			
 		} else {
 			// Sin .
 			// Puede ser un campo BD
@@ -515,46 +512,90 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 		return resultado;
 	}
 
-	private String parseCondicionExpressions(Set<Condicion> condiciones, String rawExpression) {
-		//System.out.println(condiciones);
-		//System.out.println(rawExpression + "\n\n");
+	private String parseCondition(String condicion, String as) {
+		String resultado = this.parseCondition(condicion);
+		if (as != null && !as.isEmpty()) {
+			resultado += " as " + as;
+		}
 
+		return resultado;
+	}
+
+	private String parseCondicionExpressions(Set<Condicion> condiciones, String rawExpression) {
 		Set<String> condionesToChange = new HashSet<>();
+
 		for (Condicion condicion : condiciones) {
-			String parteIzquierda = condicion.getIzquierda();
-			String parteDerecha = condicion.getDerecha();
-			if (parteIzquierda != null && !parteIzquierda.isEmpty()) {
-				// Para literales y LIKE ('valores')
-				if (!parteIzquierda.startsWith("'") && !parteIzquierda.startsWith("(")
-						&& !this.isNumeric(parteIzquierda)) {
-					condionesToChange.add(parteIzquierda);
+			String izq = condicion.getIzquierda();
+			String der = condicion.getDerecha();
+			if (izq != null && !izq.isEmpty()) {
+				if (!izq.startsWith("'") && !izq.startsWith("(") && !Utils.isNumeric(izq)) {
+					condionesToChange.add(izq);
+				} else if (izq.startsWith("(") && izq.endsWith(")")) {
+					condionesToChange.add(izq);
 				}
 			}
-			if (parteDerecha != null && !parteDerecha.isEmpty()) {
-				if (!parteDerecha.startsWith("'") && !parteDerecha.startsWith("(") && !this.isNumeric(parteDerecha)) {
-					condionesToChange.add(parteDerecha);
+			if (der != null && !der.isEmpty()) {
+				if (!der.startsWith("'") && !der.startsWith("(") && !Utils.isNumeric(der)) {
+					condionesToChange.add(der);
+				} else if (der.startsWith("(") && der.endsWith(")")) {
+					condionesToChange.add(der);
 				}
 			}
 		}
 
-		//System.out.println(condionesToChange);
 		String treatedWhereString = rawExpression;
-		//System.out.println("treatedWhereString:" + treatedWhereString);
 		for (String condicion : condionesToChange) {
 
 			// Si la condicion parseada es igual a la condición original,
 			// no hacemos sustitución; ejemplo un literal
+
 			String condicionParseada = this.parseCondition(condicion);
-			//System.out.println("condicion:" + condicion);
-			//System.out.println("condicionParseada:" + condicionParseada);
 			if (condicion.equals(condicionParseada)) {
 				continue;
 			}
 
-			treatedWhereString = Utils.reemplazarSinLiterales(treatedWhereString, condicion, this.parseCondition(condicion));
+			treatedWhereString = Utils.reemplazarSinLiterales(treatedWhereString, condicion, condicionParseada);
 		}
 
 		return treatedWhereString;
+	}
+
+	private String parseAgregatteFunction(String rawAggregateFunction) {
+		if (rawAggregateFunction == null || rawAggregateFunction.isEmpty()) {
+			return null;
+		}
+
+		int comienzoParentesis = rawAggregateFunction.indexOf("(");
+		int finParentesis = rawAggregateFunction.indexOf(")");
+
+		if (comienzoParentesis == -1 || finParentesis == -1) {
+			return null;
+		}
+
+		String funcion = rawAggregateFunction.substring(0, comienzoParentesis);
+		String contenido = rawAggregateFunction.substring(comienzoParentesis + 1, finParentesis);
+		String funcionParseada = FuncionParser.parse(funcion);
+		// System.out.println("funcion: " + funcion);
+		// System.out.println("contenido: " + contenido);
+		// System.out.println("funcionParseada: " + funcionParseada);
+
+		LinkedList<String> parametrosEncontrados = new LinkedList<>();
+		String[] parametros = contenido.split(",");
+		for (String parametro : parametros) {
+			parametro = parametro.trim();
+			Pair<String, String> aliasNombreReal = getTableFromAtributo(parametro);
+			if (aliasNombreReal != null) {
+				// Tenemos un campo de BD
+				parametrosEncontrados.add(aliasNombreReal.getKey() + "." + aliasNombreReal.getValue());
+			} else {
+				// Es un literal
+				parametrosEncontrados.add(parametro);
+			}
+		}
+
+		String contenidoParseado = String.join(", ", parametrosEncontrados);
+
+		return funcionParseada + contenidoParseado + ")";
 	}
 
 	private String getExactMappingAlias(String referencia) {
@@ -574,19 +615,6 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 				break;
 			}
 		}
-	}
-
-	private String getJPAFormat(String entrada) {
-		String phrase = entrada.toLowerCase();
-		while (phrase.contains("_")) {
-			phrase = phrase.replaceFirst("_[a-z]",
-					String.valueOf(Character.toUpperCase(phrase.charAt(phrase.indexOf("_") + 1))));
-		}
-		return phrase;
-	}
-
-	private boolean isNumeric(String str) {
-		return str.matches("-?\\d+(\\.\\d+)?"); // match a number with optional '-' and decimal.
 	}
 
 }

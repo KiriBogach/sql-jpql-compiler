@@ -7,6 +7,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Table;
+
 import utils.Utils;
 
 public class ClassIntrospection {
@@ -40,15 +42,14 @@ public class ClassIntrospection {
 		for (Class<?> clase : clasesJPA) {
 			Annotation[] anotaciones = clase.getAnnotations();
 			for (Annotation annotation : anotaciones) {
-				int posNombre = annotation.toString().indexOf("Table(name=");
-				int posNombreFin = annotation.toString().indexOf(", schema=");
-				if (posNombre == -1 || posNombreFin == -1) {
-					continue;
-				}
-				String nombreColumna = annotation.toString().substring(posNombre + "Table(name=".length(),
-						posNombreFin);
-				if (nombreClaseBuscada.equalsIgnoreCase(nombreColumna)) {
-					return clase;
+				Table table;
+				if (annotation instanceof Table) {
+					table = (Table) annotation;
+					String tableName = table.name();
+					String tableJPAformat = Utils.getJPAFormat(tableName);
+					if (nombreClaseBuscada.equalsIgnoreCase(tableJPAformat)) {
+						return clase;
+					}
 				}
 			}
 		}

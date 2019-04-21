@@ -15,7 +15,7 @@ public class Cliente {
 		JPQLTransformer transfomer = JPQLTransformerFactory.getInstance(JPQLTransformers.GSP);
 
 		String sql = "SELECT * FROM Customers WHERE (customerId = 2 and (customerId = 2 or customername = 'pedro')) or (Customers.customerId = 3)";
-		sql = "SELECT * FROM Customers c, Orders o WHERE (c.cuStoMerid = 2 and (orders.OrderID = 2 or o.OrderID = 'pedro')) or (Customers.cuStomerId = 3) or (orderID = '2') or (orderID IN (1,'ab'))";
+		
 		sql = "SELECT * FROM Customers";
 		//sql = "SELECT * FROM Customers c WHERE (c.customerid = 1 and (1 = 1 or 1 = 0)) and (c.customerid = 1)";	
 		//sql = "SELECT * FROM Customers, Orders";
@@ -43,10 +43,6 @@ public class Cliente {
 		sql = "SELECT p.*, c.categoryid FROM Products p JOIN Categories c ON 1=1";
 		
 		
-		sql = "SELECT COUNT(CustomerID), Country " 
-				+ "FROM Customers " 
-				+ "GROUP BY Country";
-		
 		sql = "SELECT CustomerID, Country " 
 				+ "FROM Customers " 
 				+ "GROUP BY Country "
@@ -59,11 +55,30 @@ public class Cliente {
 		sql = "SELECT * FROM orders o " 
 				+ "LEFT JOIN employees e ON o.EmployeeID = e.EmployeeID";
 		
-		sql = "SELECT ProductName FROM Products p WHERE p.ProductID = 2 OR 1 = 'ProductID' AND Products.producTiD = ANY (SELECT productId FROM OrderDetails WHERE Quantity = 10)";
-
 		sql= "SELECT * FROM Customers c, Orders o WHERE (c.cuStoMerid = 2 and (orders.OrderID = 2 or o.OrderID = 'pedro')) or (Customers.cuStomerId = 3) or (orderID = '2') or (orderID IN (1,'ab'))";
 		
 		sql = "SELECT p.*, c.categoryid FROM Products p JOIN Categories c ON (categoryName > 'pf') OR   p.CATEGORYID=c.CATEGORYID";
+		
+		sql = "SELECT COUNT(CustomerID), Country " 
+				+ "FROM Customers " 
+				+ "GROUP BY Country "
+				+ "HAVING COUNT(CustomerID) > 2 ";
+		
+		
+		
+		sql = "SELECT productId FROM OrderDetails WHERE Quantity = 10";
+
+		sql = "SELECT ProductName FROM Products p WHERE p.ProductID = 2 OR 1 = 'ProductID' AND Products.producTiD = ANY (SELECT * FROM Products WHERE price > 10)";
+		
+		sql = "SELECT ProductName FROM Products p WHERE p.ProductID = 2 OR 1 = 'ProductID' AND Products.producTiD = ANY (SELECT productId FROM OrderDetails WHERE Quantity > 10)";
+		
+		sql = "SELECT * FROM Customers c, Orders o WHERE (c.cuStoMerid = 2 and (orders.OrderID = 2 or o.OrderID = 'pedro')) or (Customers.cuStomerId = 3) or (orderID = '2') or (orderID IN (1,'ab'))";
+		
+		sql = "SELECT COUNT(CustomerID ,2), Country " 
+				+ "FROM Customers " 
+				+ "GROUP BY Country "
+				+ "HAVING COUNT(CustomerID) > 2 ";
+		
 		System.out.println("SQL  => " + sql + "\n");
 		
 		String jpql = transfomer.transform(sql);
