@@ -212,7 +212,6 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 			this.mappingClasesNombreJPA.put(claseJPA.getNombreJPA(), claseJPA);
 
 			// https://www.objectdb.com/java/jpa/query/jpql/from
-			TipoJoin tipoJoin = join.getTipo();
 			Set<Condicion> condiciones = join.getCondiciones();
 
 			// Buscamos una relación y mapeo por '.'
@@ -240,7 +239,7 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 				// Tenemos como enumerados: JOIN, LEFT, RIGHT ..., filtramos JOIN para no
 				// volverlo a poner
 				// Para los demás necesitamos la sintasis JOIN
-				String tipoJoinString = tipoJoin.toString() + (tipoJoin.equals(TipoJoin.JOIN) ? "" : " JOIN");
+				String tipoJoinString = getTipoJoinString(join.getTipo());
 				joinEncontrados.add(
 						tipoJoinString + " " + claseJPA.getNombreJPA() + " " + aliasUsado + " ON " + treatedJoinString);
 			}
@@ -259,7 +258,7 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 			String selectFormado = "";
 
 			if (nombreRaw.equals("*")) {
-				if (tablaReferida == null || tablaReferida.isEmpty()) {
+				if (Utils.isEmpty(tablaReferida)) {
 					// SELECT * FROM T1, T2 --> SELECT a, b FROM T1 a, T2 b
 					// SELECT * FROM T1 --> SELECT a FROM T1 a
 					selectFormado += String.join(", ", this.mappingAliasClase.keySet());
@@ -337,7 +336,7 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 		for (CampoSelect campo : orderByCampos) {
 			String condicion = this.parseCondition(campo.getRawNombre());
 			String direccionOrden = campo.getAlias(); // DESC, ASC
-			if (direccionOrden != null && !direccionOrden.isEmpty()) {
+			if (!Utils.isEmpty(direccionOrden)) {
 				condicion += " " + direccionOrden.toUpperCase();
 			}
 
@@ -348,6 +347,7 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 	// El parámetro claseFrom es la clase a la que se le está haciendo el JOIN
 	private Pair<String, Condicion> getRelationCondicition(Join join, ClaseJPA claseFrom) {
 		Set<Condicion> condiciones = join.getCondiciones();
+		// System.out.println("condiciones: " + condiciones);
 
 		for (Condicion condicion : condiciones) {
 			String condicionParseadaIzquierda = this.parseCondition(condicion.getIzquierda());
@@ -361,37 +361,51 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 			String referenciaNull;
 			String refecenciaValor;
 
-			if (campoIzquierda == null || campoIzquierda.isEmpty() || campoIzquierda.equalsIgnoreCase("null")) {
+			// System.out.println("campoIzquierda: " + campoIzquierda);
+			// System.out.println("campoDerecha: " + campoDerecha);
+			// System.out.println("referenciaIzquierda: " + referenciaIzquierda);
+			// System.out.println("referenciaDerecha: " + referenciaDerecha);
+
+			if (Utils.isEmpty(campoIzquierda)) {
 				campoValor = campoDerecha;
 				referenciaNull = referenciaIzquierda;
 				refecenciaValor = referenciaDerecha;
-			} else if (campoDerecha == null || campoDerecha.isEmpty() || campoDerecha.equalsIgnoreCase("null")) {
+			} else if (Utils.isEmpty(campoDerecha)) {
 				campoValor = campoIzquierda;
 				referenciaNull = referenciaDerecha;
 				refecenciaValor = referenciaIzquierda;
+			} else if (Utils.isEmpty(referenciaIzquierda) || Utils.isEmpty(referenciaDerecha)) {
+				continue;
+			} else if (this.mappingAliasClase.get(referenciaIzquierda).equals(claseFrom)) {
+				campoValor = campoIzquierda;
+				referenciaNull = referenciaDerecha;
+				refecenciaValor = referenciaIzquierda;
+			} else if (this.mappingAliasClase.get(referenciaDerecha).equals(claseFrom)) {
+				campoValor = campoDerecha;
+				referenciaNull = referenciaIzquierda;
+				refecenciaValor = referenciaDerecha;
 			} else {
 				continue;
 			}
 
-			// System.out.println("campoValor: " + campoValor);
-			// System.out.println("referenciaNull: " + referenciaNull);
-			// System.out.println("refecenciaValor: " + refecenciaValor);
-
+			// Analizamos @OneToMany @ManyToMany @ManyToOne
+			// Si encontramos uno de estos casos, lo devolvemos
 			ClaseJPA claseValor = this.mappingAliasClase.get(refecenciaValor);
+			ClaseJPA claseNull = this.mappingAliasClase.get(referenciaNull);
+
 			if (claseValor.getAtributoID().equalsIgnoreCase(campoValor)) {
-				ClaseJPA claseNull = this.mappingAliasClase.get(referenciaNull);
-
 				AtributoClaseJPA atributoNull = claseNull.getAtributoWithJoinColumn(claseValor.getAtributoID());
-				if (atributoNull.getManyToOne() != null) {
-					if (claseValor.getClaseReferenciada().equals(atributoNull.getTipo())) {
-						AtributoClaseJPA atributoDerecha = claseValor.getAtributoMappedBy(atributoNull.getNombre());
 
-						TipoJoin tipoJoin = join.getTipo();
-						String tipoJoinString = tipoJoin.toString() + (tipoJoin.equals(TipoJoin.JOIN) ? "" : " JOIN");
+				if (atributoNull != null && atributoNull.getManyToOne() != null) {
+					if (claseValor.getClaseReferenciada().equals(atributoNull.getTipo())) {
+						AtributoClaseJPA atributoValor = claseValor
+								.getAtributoMappedByOneToMany(atributoNull.getNombre());
+
+						String tipoJoinString = getTipoJoinString(join.getTipo());
 						String joinResult = tipoJoinString + " ";
 
 						if (claseFrom.equals(claseNull)) {
-							joinResult += refecenciaValor + "." + atributoDerecha.getNombre() + " " + referenciaNull;
+							joinResult += refecenciaValor + "." + atributoValor.getNombre() + " " + referenciaNull;
 						} else {
 							joinResult += referenciaNull + "." + atributoNull.getNombre() + " " + refecenciaValor;
 						}
@@ -399,8 +413,69 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 					}
 				}
 			}
+
+			// Analizamos @OneToOne
+			// Si encontramos el caso, lo devolvemos
+			ClaseJPA claseIzq = this.mappingAliasClase.get(referenciaIzquierda);
+			ClaseJPA claseDer = this.mappingAliasClase.get(referenciaDerecha);
+			if (claseIzq == null || claseDer == null) {
+				continue;
+			}
+			String tipoJoinString = getTipoJoinString(join.getTipo());
+			AtributoClaseJPA atbIzq = claseIzq.getAtributoOneToOne(campoIzquierda);
+			AtributoClaseJPA atbDer = claseDer.getAtributoOneToOne(campoDerecha);
+
+//			System.out.println("referenciaIzquierda: " + referenciaIzquierda);
+//			System.out.println("referenciaDerecha: " + referenciaDerecha);
+//			System.out.println("claseIzq: " + claseIzq);
+//			System.out.println("claseDer: " + claseDer);
+//			System.out.println("campoIzquierda: " + campoIzquierda);
+//			System.out.println("campoDerecha: " + campoDerecha);
+//			System.out.println("atbIzq: " + atbIzq);
+//			System.out.println("atbDer: " + atbDer);
+
+			AtributoClaseJPA atbReferenciado = atbIzq != null ? atbIzq : atbDer;
+			if (atbReferenciado.getOneToOne() == null) {
+				continue;
+			}
+
+			ClaseJPA claseReferenciada;
+			String tabla;
+			String alias;
+			if (claseFrom.equals(claseDer)) {
+				claseReferenciada = claseIzq;
+				tabla = referenciaIzquierda;
+				alias = referenciaDerecha;
+			} else if (claseFrom.equals(claseIzq)) {
+				claseReferenciada = claseDer;
+				tabla = referenciaDerecha;
+				alias = referenciaIzquierda;
+			} else {
+				// Si no se encuentra el mapping, no se puede hacer y lo saltamos
+				continue;
+			}
+
+			String referencia;
+			String mappedBy = atbReferenciado.getOneToOne().mappedBy();
+
+			if (!Utils.isEmpty(mappedBy)) {
+				/*
+				 * Si tenemos el propio mapping en la clase lo indicamos Al menos, una de las
+				 * dos clases debe tener:
+				 * 
+				 * @OneToOne(mappedBy="")
+				 */
+				referencia = mappedBy;
+			} else {
+				// Sino, lo buscamos en la otra clase
+				referencia = claseReferenciada.getAtributoMappedByOneToOne(atbReferenciado.getNombre()).getNombre();
+			}
+
+			String joinResult = tipoJoinString + " " + tabla + "." + referencia + " " + alias;
+			return new Pair<String, Condicion>(joinResult, condicion);
 		}
 
+		// Si no se encutra, retornamos null
 		return null;
 	}
 
@@ -422,17 +497,20 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 		if (claseJPA == null || atributoBuscado == null) {
 			return null;
 		}
+
 		String atributoNormalizado = Utils.getJPAFormat(atributoBuscado);
 		String atributoEnClase = claseJPA.getAttributeRealName(atributoNormalizado);
 		if (atributoEnClase != null) {
 			return new Pair<>("", atributoEnClase);
 		}
+
 		return null;
 	}
 
 	private String parseCondition(String condicion) {
 		String resultado = "";
-		// System.out.println(condicion);
+		// System.out.println("condicion: " + condicion);
+
 		if (condicion.contains(".")) {
 			// Puede ser:
 			// ... FROM TABLA a WHERE a.atr
@@ -444,7 +522,9 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 			if (this.mappingNombreBDAlias.containsKey(referencia)) {
 				// ... FROM TABLA WHERE tabla.atr
 				String alias = this.mappingNombreBDAlias.get(referencia);
-				String nombreCampo = this.mappingAliasClase.get(alias).getAttributeRealName(rawColumn);
+				ClaseJPA clase = this.mappingAliasClase.get(alias);
+				String nombreCampo = clase.getAttributeRealName(rawColumn);
+
 				resultado += alias + "." + nombreCampo;
 			} else {
 				// ... FROM TABLA a WHERE a.atr
@@ -467,9 +547,9 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 			// Si encontramos una subquery la parseamos y la devolvemos
 			if (Utils.isSubquery(condicion)) {
 				String subqueryParseada = JPQLTransformerFactory.getInstance(JPQLTransformers.GSP).transform(condicion);
-				return Utils.addParentesis(subqueryParseada); //this.transform(condicion);
+				return Utils.addParentesis(subqueryParseada); // this.transform(condicion);
 			}
-			
+
 			// Si empieza y acaba con paréntesis tenemos IN (2, 'abc') ...
 			if (condicion.startsWith("(") && condicion.endsWith(")")) {
 				int comienzoParentesis = condicion.indexOf("(");
@@ -492,7 +572,7 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 			if (agregatteFunction != null) {
 				return agregatteFunction;
 			}
-			
+
 		} else {
 			// Sin .
 			// Puede ser un campo BD
@@ -514,7 +594,7 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 
 	private String parseCondition(String condicion, String as) {
 		String resultado = this.parseCondition(condicion);
-		if (as != null && !as.isEmpty()) {
+		if (!Utils.isEmpty(as)) {
 			resultado += " as " + as;
 		}
 
@@ -527,14 +607,14 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 		for (Condicion condicion : condiciones) {
 			String izq = condicion.getIzquierda();
 			String der = condicion.getDerecha();
-			if (izq != null && !izq.isEmpty()) {
+			if (!Utils.isEmpty(izq)) {
 				if (!izq.startsWith("'") && !izq.startsWith("(") && !Utils.isNumeric(izq)) {
 					condionesToChange.add(izq);
 				} else if (izq.startsWith("(") && izq.endsWith(")")) {
 					condionesToChange.add(izq);
 				}
 			}
-			if (der != null && !der.isEmpty()) {
+			if (!Utils.isEmpty(der)) {
 				if (!der.startsWith("'") && !der.startsWith("(") && !Utils.isNumeric(der)) {
 					condionesToChange.add(der);
 				} else if (der.startsWith("(") && der.endsWith(")")) {
@@ -596,6 +676,10 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 		String contenidoParseado = String.join(", ", parametrosEncontrados);
 
 		return funcionParseada + contenidoParseado + ")";
+	}
+
+	private String getTipoJoinString(TipoJoin tipoJoin) {
+		return TipoJoin.getJPQLJoin(tipoJoin) + (tipoJoin.equals(TipoJoin.JOIN) ? "" : " JOIN");
 	}
 
 	private String getExactMappingAlias(String referencia) {

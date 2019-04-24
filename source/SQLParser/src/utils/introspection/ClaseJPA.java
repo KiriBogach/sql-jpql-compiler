@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 public class ClaseJPA {
@@ -43,6 +44,10 @@ public class ClaseJPA {
 	public void addAtributo(Field field) { // String nombre, Class<?> tipo, Annotation[] annotations) {
 		this.atributos.put(field.getName(), new AtributoClaseJPA(field));
 	}
+	
+	public AtributoClaseJPA getAtribuo(String name) {
+		return this.atributos.get(name);
+	}
 
 	public Annotation[] getAnnotationsAtributo(String nombre) {
 		return this.atributos.get(nombre).getAnnotations();
@@ -50,7 +55,7 @@ public class ClaseJPA {
 
 	public String getAtributoID() {
 		for (Map.Entry<String, AtributoClaseJPA> atributo : atributos.entrySet()) {
-			Id id = atributo.getValue().id;
+			Id id = atributo.getValue().getId();
 			if (id != null) {
 				return atributo.getKey();
 			}
@@ -68,10 +73,42 @@ public class ClaseJPA {
 		return null;
 	}
 	
-	public AtributoClaseJPA getAtributoMappedBy(String nombre) {
+	public AtributoClaseJPA getAtributoOneToOne(String nombre) {
 		for (Map.Entry<String, AtributoClaseJPA> atributo : atributos.entrySet()) {
-			OneToMany oneToMany = atributo.getValue().oneToMany;
+			JoinColumn joinColumn = atributo.getValue().joinColumn;
+			OneToOne oneToOne = atributo.getValue().oneToOne;
+			if (joinColumn != null && joinColumn.name().equalsIgnoreCase(nombre)) {
+				return atributo.getValue();
+			} else if (oneToOne != null && oneToOne.mappedBy().equalsIgnoreCase(nombre)) {
+				return atributo.getValue();
+			}
+		}
+		return null;
+	}
+	
+	public AtributoClaseJPA getAtributoMappedByOneToMany(String nombre) {
+		for (Map.Entry<String, AtributoClaseJPA> atributo : atributos.entrySet()) {
+			OneToMany oneToMany = atributo.getValue().getOneToMany();
+			
+			//Buscamos el mappedBy con ese nombre
 			if (oneToMany != null && oneToMany.mappedBy().equalsIgnoreCase(nombre)) {
+				return atributo.getValue();
+			}
+		}
+		return null;
+	}
+	
+	public AtributoClaseJPA getAtributoMappedByOneToOne(String nombre) {
+		for (Map.Entry<String, AtributoClaseJPA> atributo : atributos.entrySet()) {
+			
+			// Si el propio nombre es el atributo lo devolvemos
+			if (atributo.getKey().equalsIgnoreCase(nombre)) {
+				return atributo.getValue();
+			}
+			
+			//Buscamos el mappedBy con ese nombre
+			OneToOne oneToOne = atributo.getValue().getOneToOne();
+			if (oneToOne != null && oneToOne.mappedBy().equalsIgnoreCase(nombre)) {
 				return atributo.getValue();
 			}
 		}
@@ -118,6 +155,7 @@ public class ClaseJPA {
 		private JoinColumn joinColumn;
 		private ManyToOne manyToOne;
 		private OneToMany oneToMany;
+		private OneToOne oneToOne;
 		private Class<?> tipo;
 
 		public AtributoClaseJPA(Field field) { 
@@ -135,6 +173,8 @@ public class ClaseJPA {
 					this.manyToOne = (ManyToOne) annotation;
 				} else if (annotation instanceof OneToMany) {
 					this.oneToMany = (OneToMany) annotation;
+				} else if (annotation instanceof OneToOne) {
+					this.oneToOne = (OneToOne) annotation;
 				} else if (annotation instanceof Id) {
 					this.id = (Id) annotation;
 				}
@@ -163,6 +203,10 @@ public class ClaseJPA {
 
 		public OneToMany getOneToMany() {
 			return oneToMany;
+		}
+		
+		public OneToOne getOneToOne() {
+			return oneToOne;
 		}
 
 		public Class<?> getTipo() {

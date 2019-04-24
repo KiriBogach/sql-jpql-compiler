@@ -7,6 +7,7 @@
 		transaction-type="RESOURCE_LOCAL">
 		<class>database.model.Category</class>
 		<class>database.model.Customer</class>
+		<class>database.model.CustomersExtra</class>
 		<class>database.model.Employee</class>
 		<class>database.model.OrderDetail</class>
 		<class>database.model.Order</class>

@@ -46,8 +46,8 @@ public class ClassIntrospection {
 				if (annotation instanceof Table) {
 					table = (Table) annotation;
 					String tableName = table.name();
-					String tableJPAformat = Utils.getJPAFormat(tableName);
-					if (nombreClaseBuscada.equalsIgnoreCase(tableJPAformat)) {
+					//String tableJPAformat = Utils.getJPAFormat(tableName);
+					if (nombreClaseBuscada.equalsIgnoreCase(tableName)) {
 						return clase;
 					}
 				}

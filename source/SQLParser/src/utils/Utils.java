@@ -4,6 +4,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utils {
+	
+	public final static boolean CAMEL_CASE_FORMAT = false;
+	
+	public static boolean isEmpty(String str) {
+		return str == null || str.isEmpty() || str.equalsIgnoreCase("null");
+	}
 
 	public static String getFieldTable(String field) {
 		int indicePunto = field.indexOf(".");
@@ -57,12 +63,16 @@ public class Utils {
 	}
 	
 	public static String getJPAFormat(String entrada) {
-		String phrase = entrada.toLowerCase();
-		while (phrase.contains("_")) {
-			phrase = phrase.replaceFirst("_[a-z]",
-					String.valueOf(Character.toUpperCase(phrase.charAt(phrase.indexOf("_") + 1))));
+		if (!CAMEL_CASE_FORMAT) {
+			return entrada;
 		}
-		return phrase;
+		
+		String salida = entrada.toLowerCase();
+		while (salida.contains("_")) {
+			salida = salida.replaceFirst("_[a-z]",
+					String.valueOf(Character.toUpperCase(salida.charAt(salida.indexOf("_") + 1))));
+		}
+		return salida;
 	}
 	
 	public static boolean isNumeric(String str) {
