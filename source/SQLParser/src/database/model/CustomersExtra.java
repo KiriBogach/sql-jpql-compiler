@@ -16,17 +16,18 @@ public class CustomersExtra implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(unique=true, nullable=false)
 	private int customer_ID;
 
-	@Column(name="last_message")
+	@Column(name="last_message", length=512)
 	private String lastMessage;
 
-	@Column(name="mobile_phone")
+	@Column(name="mobile_phone", length=9)
 	private String mobilePhone;
 
 	//bi-directional one-to-one association to Customer
 	@OneToOne
-	@JoinColumn(name="customer_ID")
+	@JoinColumn(name="customer_ID", nullable=false, insertable=false, updatable=false)
 	private Customer customer;
 
 	public CustomersExtra() {

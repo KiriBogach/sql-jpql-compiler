@@ -17,10 +17,13 @@ public class Category implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(unique=true, nullable=false)
 	private int categoryID;
 
+	@Column(length=255)
 	private String categoryName;
 
+	@Column(length=255)
 	private String description;
 
 	//bi-directional many-to-one association to Product

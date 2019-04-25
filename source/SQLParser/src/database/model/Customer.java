@@ -17,18 +17,25 @@ public class Customer implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(unique=true, nullable=false)
 	private int customerID;
 
+	@Column(length=255)
 	private String address;
 
+	@Column(length=255)
 	private String city;
 
+	@Column(length=255)
 	private String contactName;
 
+	@Column(length=255)
 	private String country;
 
+	@Column(length=255)
 	private String customerName;
 
+	@Column(length=255)
 	private String postalCode;
 
 	//bi-directional one-to-one association to CustomersExtra

@@ -255,25 +255,11 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 			String tablaReferida = campoSelect.getTableReference(); // (c).customerId
 			String nombreRaw = campoSelect.getRawNombre(); // c.(customerId)
 
-			String selectFormado = "";
+			// Controlamos el caso de asterisco
+			String asteriscoFormado = this.parseAsterisco(nombreRaw, tablaReferida);
 
-			if (nombreRaw.equals("*")) {
-				if (Utils.isEmpty(tablaReferida)) {
-					// SELECT * FROM T1, T2 --> SELECT a, b FROM T1 a, T2 b
-					// SELECT * FROM T1 --> SELECT a FROM T1 a
-					selectFormado += String.join(", ", this.mappingAliasClase.keySet());
-				} else {
-					// SELECT a.* FROM T1 a, T2 b --> SELECT a FROM T1 a, T2 b
-					if (this.mappingAliasClase.containsKey(tablaReferida)) {
-						// SELECT c.* FROM Customers c
-						selectFormado += tablaReferida;
-					} else {
-						// SELECT customers.* FROM Customers
-						selectFormado += this.mappingNombreBDAlias.get(tablaReferida);
-					}
-				}
-
-				this.selectEncontrados.add(selectFormado);
+			if (!Utils.isEmpty(asteriscoFormado)) {
+				this.selectEncontrados.add(asteriscoFormado);
 				continue;
 			}
 
@@ -342,6 +328,32 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 
 			this.orderByEncontrados.add(condicion);
 		}
+	}
+
+	private String parseAsterisco(String nombreRaw, String tablaReferida) {
+
+		if (nombreRaw.equals("*")) {
+			String campoFormado = "";
+
+			if (Utils.isEmpty(tablaReferida)) {
+				// SELECT * FROM T1, T2 --> SELECT a, b FROM T1 a, T2 b
+				// SELECT * FROM T1 --> SELECT a FROM T1 a
+				campoFormado += String.join(", ", this.mappingAliasClase.keySet());
+			} else {
+				// SELECT a.* FROM T1 a, T2 b --> SELECT a FROM T1 a, T2 b
+				if (this.mappingAliasClase.containsKey(tablaReferida)) {
+					// SELECT c.* FROM Customers c
+					campoFormado += tablaReferida;
+				} else {
+					// SELECT customers.* FROM Customers
+					campoFormado += this.mappingNombreBDAlias.get(tablaReferida);
+				}
+			}
+
+			return campoFormado;
+		}
+
+		return null;
 	}
 
 	// El parámetro claseFrom es la clase a la que se le está haciendo el JOIN
@@ -481,15 +493,62 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 
 	private Pair<String, String> getTableFromAtributo(String atributoBuscado) {
 		String atributoNormalizado = Utils.getJPAFormat(atributoBuscado);
+		
+		//Pair<String, ClaseJPA> pairJoinColumn = null;
+
 		for (Map.Entry<String, ClaseJPA> claseBuscada : this.mappingAliasClase.entrySet()) {
 			String alias = claseBuscada.getKey();
 			ClaseJPA clase = claseBuscada.getValue();
 			String atributoEnClase = clase.getAttributeRealName(atributoNormalizado);
+
 			if (atributoEnClase != null) {
 				return new Pair<>(alias, atributoEnClase);
 			}
-		}
+			
+			AtributoClaseJPA atributoJoinColumn = clase.getAtributoWithJoinColumn(atributoNormalizado);
+			if (Utils.isEmpty(atributoEnClase) && atributoJoinColumn != null) {
+				/*
+				 * @ManyToOne
+				 * @JoinColumn(name="ProductID")
+				 * private (Product) product; --> claseTipo
+				 */
+				Class<?> claseTipo = atributoJoinColumn.getTipo();
+				ClaseJPA claseJPATipo = ClassIntrospection.getClaseJPA(claseTipo);
+				String nombreAtributoPK = claseJPATipo.getAtributoID();
+				
+				return new Pair<>(alias, atributoJoinColumn.getNombre() + "." + nombreAtributoPK);
+			}
 
+		}
+		
+		return null;
+	}
+	
+	private Pair<String, String> getPrimaryKeyOfRelation(String atributoBuscado) {
+		String atributoNormalizado = Utils.getJPAFormat(atributoBuscado);
+		
+		//Pair<String, ClaseJPA> pairJoinColumn = null;
+
+		for (Map.Entry<String, ClaseJPA> claseBuscada : this.mappingAliasClase.entrySet()) {
+			String alias = claseBuscada.getKey();
+			ClaseJPA clase = claseBuscada.getValue();
+			
+			AtributoClaseJPA atributoJoinColumn = clase.getAtributoWithJoinColumn(atributoNormalizado);
+			if (atributoJoinColumn != null) {
+				/*
+				 * @ManyToOne
+				 * @JoinColumn(name="ProductID")
+				 * private (Product) product; --> claseTipo
+				 */
+				Class<?> claseTipo = atributoJoinColumn.getTipo();
+				ClaseJPA claseJPATipo = ClassIntrospection.getClaseJPA(claseTipo);
+				String nombreAtributoPK = claseJPATipo.getAtributoID();
+				
+				return new Pair<>(alias, atributoJoinColumn.getNombre() + "." + nombreAtributoPK);
+			}
+
+		}
+		
 		return null;
 	}
 
@@ -506,8 +565,12 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 
 		return null;
 	}
-
+	
 	private String parseCondition(String condicion) {
+		return this.parseCondition(condicion, false);
+	}
+
+	private String parseCondition(String condicion, boolean select) {
 		String resultado = "";
 		// System.out.println("condicion: " + condicion);
 
@@ -518,12 +581,23 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 			// ... FROM TABLA WHERE tabla.atr
 			String referencia = Utils.getFieldTable(condicion);
 			String rawColumn = Utils.getRawColumnValue(condicion);
-
+			
 			if (this.mappingNombreBDAlias.containsKey(referencia)) {
 				// ... FROM TABLA WHERE tabla.atr
 				String alias = this.mappingNombreBDAlias.get(referencia);
 				ClaseJPA clase = this.mappingAliasClase.get(alias);
 				String nombreCampo = clase.getAttributeRealName(rawColumn);
+				
+				// Miramos el caso de:
+				// orders.customerid === b.customer.customerID
+				// orders.customerid no existe, pero existe la entidad customer
+				// Solo para el select, porque en otro caso miraríamos JOINS
+				if (select && Utils.isEmpty(nombreCampo)) {
+					Pair<String, String> relacionEncadenada = this.getPrimaryKeyOfRelation(rawColumn);
+					if (relacionEncadenada != null) {
+						nombreCampo = relacionEncadenada.getValue();
+					}
+				}
 
 				resultado += alias + "." + nombreCampo;
 			} else {
@@ -629,7 +703,7 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 			// Si la condicion parseada es igual a la condición original,
 			// no hacemos sustitución; ejemplo un literal
 
-			String condicionParseada = this.parseCondition(condicion);
+			String condicionParseada = this.parseCondition(condicion, true);
 			if (condicion.equals(condicionParseada)) {
 				continue;
 			}
@@ -668,6 +742,14 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 				// Tenemos un campo de BD
 				parametrosEncontrados.add(aliasNombreReal.getKey() + "." + aliasNombreReal.getValue());
 			} else {
+				String tablaReferida = Utils.getRawFieldTable(parametro);
+				String asterisco = this.parseAsterisco(parametro, tablaReferida);
+
+				if (!Utils.isEmpty(asterisco)) {
+					parametrosEncontrados.add(asterisco);
+					continue;
+				}
+
 				// Es un literal
 				parametrosEncontrados.add(parametro);
 			}

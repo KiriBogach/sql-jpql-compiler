@@ -18,6 +18,14 @@ public class Utils {
 		}
 		return field.substring(0, indicePunto);
 	}
+	
+	public static String getRawFieldTable(String field) {
+		int indicePunto = field.indexOf(".");
+		if (indicePunto == -1) {
+			return null;
+		}
+		return field.substring(0, indicePunto);
+	}
 
 	public static String getOnlyFieldTable(String field) {
 		int indicePunto = field.indexOf(".");
@@ -28,7 +36,7 @@ public class Utils {
 	}
 
 	public static String getRawColumnValue(String nombreAtributoBuscado) {
-		int indicePunto = nombreAtributoBuscado.indexOf(".");
+		int indicePunto = nombreAtributoBuscado.lastIndexOf(".");
 		if (indicePunto == -1) {
 			return nombreAtributoBuscado;
 		}

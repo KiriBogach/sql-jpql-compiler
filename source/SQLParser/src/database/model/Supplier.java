@@ -17,20 +17,28 @@ public class Supplier implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(unique=true, nullable=false)
 	private int supplierID;
 
+	@Column(length=255)
 	private String address;
 
+	@Column(length=255)
 	private String city;
 
+	@Column(length=255)
 	private String contactName;
 
+	@Column(length=255)
 	private String country;
 
+	@Column(length=255)
 	private String phone;
 
+	@Column(length=255)
 	private String postalCode;
 
+	@Column(length=255)
 	private String supplierName;
 
 	//bi-directional many-to-one association to Product

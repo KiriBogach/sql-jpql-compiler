@@ -18,17 +18,21 @@ public class Employee implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(unique=true, nullable=false)
 	private int employeeID;
 
 	@Temporal(TemporalType.DATE)
 	private Date birthDate;
 
+	@Column(length=255)
 	private String firstName;
 
+	@Column(length=255)
 	private String lastName;
 
-	private Object notes;
+	private String notes;
 
+	@Column(length=255)
 	private String photo;
 
 	//bi-directional many-to-one association to Order
@@ -70,11 +74,11 @@ public class Employee implements Serializable {
 		this.lastName = lastName;
 	}
 
-	public Object getNotes() {
+	public String getNotes() {
 		return this.notes;
 	}
 
-	public void setNotes(Object notes) {
+	public void setNotes(String notes) {
 		this.notes = notes;
 	}
 

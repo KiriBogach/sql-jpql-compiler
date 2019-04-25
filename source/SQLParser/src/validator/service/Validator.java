@@ -8,8 +8,6 @@ import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
-import database.model.Customer;
-
 public class Validator {
 
 	public static final String PU_NAME = "W3Schools-Laboratory";
@@ -22,15 +20,15 @@ public class Validator {
 		EntityManager em = emf.createEntityManager();
 		
 		// JPQL QUERY
-		TypedQuery<Customer> typedQuery = em.createQuery(jpql, Customer.class);
-		List<Customer> resultado = typedQuery.getResultList();
-		for (Customer customer : resultado) {
+		TypedQuery<Object> typedQuery = em.createQuery(jpql, Object.class);
+		List<Object> resultado = typedQuery.getResultList();
+		for (Object customer : resultado) {
 			if (showResults) System.out.println(customer);
 		}
 
 		// NATIVE QUERY MAPEADA A LA ENTIDAD - MySQL
-		Query nativeQueryMapped = em.createNativeQuery(sql, Customer.class);
-		List<Customer> resultadoNativeMapped = nativeQueryMapped.getResultList();
+		Query nativeQueryMapped = em.createNativeQuery(sql);
+		List<Object> resultadoNativeMapped = nativeQueryMapped.getResultList();
 		for (Object o : resultadoNativeMapped) {
 			if (showResults) System.out.println(o);
 		}

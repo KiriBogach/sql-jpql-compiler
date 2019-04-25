@@ -17,10 +17,13 @@ public class Shipper implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(unique=true, nullable=false)
 	private int shipperID;
 
+	@Column(length=255)
 	private String phone;
 
+	@Column(length=255)
 	private String shipperName;
 
 	//bi-directional many-to-one association to Order

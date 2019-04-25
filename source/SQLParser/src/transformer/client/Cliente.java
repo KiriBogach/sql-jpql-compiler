@@ -67,10 +67,6 @@ public class Cliente {
 		
 		
 		sql = "SELECT productId FROM Order_Details WHERE Quantity = 10";
-
-		sql = "SELECT ProductName FROM Products p WHERE p.ProductID = 2 OR 1 = 'ProductID' AND Products.producTiD = ANY (SELECT * FROM Products WHERE price > 10)";
-		
-		sql = "SELECT ProductName FROM Products p WHERE p.ProductID = 2 OR 1 = 'ProductID' AND Products.producTiD = ANY (SELECT productId FROM Order_Details WHERE Quantity > 10)";
 		
 		sql = "SELECT * FROM Customers c, Orders o WHERE (c.cuStoMerid = 2 and (orders.OrderID = 2 or o.OrderID = 'pedro')) or (Customers.cuStomerId = 3) or (orderID = '2') or (orderID IN (1,'ab'))";
 		
@@ -102,7 +98,24 @@ public class Cliente {
 		//sql = "SELECT * FROM customers_extra JOIN customers ON customers_extra.customer_ID = customers.CustomerID";
 
 		sql = "SELECT * FROM Products p JOIN Categories c ON p.CATEGORYID=c.CATEGORYID";
+		
+		sql = "SELECT COUNT(*), Country " 
+				+ "FROM Customers " 
+				+ "GROUP BY Country "
+				+ "HAVING COUNT(CustomerID) > 2 ";
+		
 
+		sql = "SELECT ProductName FROM Products p WHERE p.ProductID = 2 OR 1 = 'ProductID' AND Products.producTiD = ANY (SELECT * FROM Products WHERE price > 10)";
+		
+		sql = "SELECT ProductName FROM Products p WHERE Products.producTiD = ANY (SELECT * FROM Products WHERE price > 10)";
+		
+		sql = "SELECT productId FROM Order_Details WHERE Quantity > 10";
+		
+		
+		sql = "SELECT * FROM employees LEFT JOIN orders ON orders.EmployeeID = employees.EmployeeID";
+
+		//sql = "SELECT * FROM Customers, Orders WHERE customers.customerID = orders.customerid";
+		
 		System.out.println("SQL  => " + sql + "\n");
 		
 		String jpql = transfomer.transform(sql);

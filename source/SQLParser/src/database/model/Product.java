@@ -17,12 +17,15 @@ public class Product implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(unique=true, nullable=false)
 	private int productID;
 
 	private double price;
 
+	@Column(length=255)
 	private String productName;
 
+	@Column(length=255)
 	private String unit;
 
 	//bi-directional many-to-one association to OrderDetail

@@ -16,6 +16,7 @@ public class OrderDetail implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(unique=true, nullable=false)
 	private int orderDetailID;
 
 	private int quantity;

@@ -18,6 +18,7 @@ public class Order implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(unique=true, nullable=false)
 	private int orderID;
 
 	@Temporal(TemporalType.DATE)

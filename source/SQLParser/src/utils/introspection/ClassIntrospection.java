@@ -32,6 +32,16 @@ public class ClassIntrospection {
 		return claseJPA;
 	}
 	
+	public static ClaseJPA getClaseJPA(Class<?> entidadJPA) {
+		ClaseJPA claseJPA = new ClaseJPA(entidadJPA);
+		
+		for (Field field : entidadJPA.getDeclaredFields()) {
+			claseJPA.addAtributo(field);
+		}
+		
+		return claseJPA;
+	}
+	
 	/*
 	 * Busca la clase cuya notación JPA tenga como nombre de tabla el parámetro
 	 * 'nombreClaseBuscada':
