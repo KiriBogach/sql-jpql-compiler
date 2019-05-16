@@ -131,11 +131,8 @@ public class ClienteMultiple {
 		
 		sql = "SELECT productId FROM Order_Details WHERE Quantity = 10";
 		queries.put(sql, null);
-
-		sql = "SELECT ProductName FROM Products p WHERE p.ProductID = 2 OR 1 = 'ProductID' AND Products.producTiD = ANY (SELECT * FROM Products WHERE price > 10)";
-		queries.put(sql, null);
 		
-		sql = "SELECT ProductName FROM Products p WHERE p.ProductID = 2 OR 1 = 'ProductID' AND Products.producTiD = ANY (SELECT productId FROM Order_Details WHERE Quantity > 10)";
+		sql = "SELECT ProductName FROM Products WHERE ProductID = ANY (SELECT ProductID FROM Order_Details WHERE Quantity = 10)";
 		queries.put(sql, null);
 		
 		sql = "SELECT * FROM Customers c, Orders o WHERE (c.cuStoMerid = 2 and (orders.OrderID = 2 or o.OrderID = 'pedro')) or (Customers.cuStomerId = 3) or (orderID = '2') or (orderID IN (1,'ab'))";

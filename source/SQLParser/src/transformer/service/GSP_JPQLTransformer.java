@@ -189,6 +189,7 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 
 	public void buildJoin() {
 		LinkedList<Join> joins = this.from.getJoins();
+		//System.out.println(joins);
 
 		for (Join join : joins) {
 			String aliasCampo = join.getTable().getAlias();
@@ -213,6 +214,7 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 
 			// https://www.objectdb.com/java/jpa/query/jpql/from
 			Set<Condicion> condiciones = join.getCondiciones();
+			//System.out.println(condiciones);
 
 			// Buscamos una relación y mapeo por '.'
 			claseJPA.getAtributoWithJoinColumn(nombreCampo);
