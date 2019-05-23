@@ -1,0 +1,4 @@
+SELECT * FROM Customers, Orders WHERE customers.customerID = orders.customerid
+SELECT COUNT(*), Country FROM Customers GROUP BY Country HAVING COUNT(CustomerID) > 2
+SELECT p.*, c.categoryid FROM Products p JOIN Categories c ON 1=1
+mal

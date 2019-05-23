@@ -9,8 +9,8 @@ public class Cliente {
 
 	public static void main(String[] args) throws Exception {
 
-		final boolean validate = false;
-		final boolean showValidateResults = false;
+		final boolean validate = true;
+		final boolean saveResults = true;
 		
 		JPQLTransformer transfomer = JPQLTransformerFactory.getInstance(JPQLTransformers.GSP);
 
@@ -60,10 +60,10 @@ public class Cliente {
 		sql = "SELECT p.*, c.categoryid FROM Products p JOIN Categories c ON (categoryName > 'pf') OR   p.CATEGORYID=c.CATEGORYID";
 		
 		sql = "SELECT p.categoryid, c.categoryid FROM Products p JOIN Categories c ON p.CATEGORYID=c.CATEGORYID";
-		/*sql = "SELECT COUNT(CustomerID), Country " 
+		sql = "SELECT COUNT(CustomerID), Country " 
 				+ "FROM Customers " 
 				+ "GROUP BY Country "
-				+ "HAVING COUNT(CustomerID) > 2 ";*/
+				+ "HAVING COUNT(CustomerID) > 2 ";
 		
 		
 		
@@ -110,10 +110,10 @@ public class Cliente {
 
 		//sql = "SELECT * FROM Products p JOIN Categories c ON p.CATEGORYID=c.CATEGORYID";
 		
-		/*sql = "SELECT COUNT(*), Country " 
+		sql = "SELECT COUNT(*), Country " 
 				+ "FROM Customers " 
 				+ "GROUP BY Country "
-				+ "HAVING COUNT(CustomerID) > 2 ";*/
+				+ "HAVING COUNT(CustomerID) > 2 ";
 		
 		//sql = "SELECT ProductName FROM Products p WHERE p.producTiD = ANY (SELECT productId FROM Products WHERE price > 10)";
 		//sql = "SELECT ProductName FROM Products p WHERE p.ProductID = 2 OR 1 = 'ProductID' AND p.producTiD = ANY (SELECT productId FROM Products WHERE price > 10)";
@@ -126,7 +126,7 @@ public class Cliente {
 		
 		//sql = "SELECT * FROM employees LEFT JOIN orders ON orders.EmployeeID = employees.EmployeeID";
 		//sql = "SELECT p.*, c.categoryid FROM Products p JOIN Categories c ON 1=1";
-		//sql = "SELECT * FROM Customers, Orders WHERE customers.customerID = orders.customerid";
+		sql = "SELECT * FROM Customers, Orders WHERE customers.customerID = orders.customerid";
 		
 		System.out.println("SQL  => " + sql + "\n");
 		
@@ -135,7 +135,8 @@ public class Cliente {
 		System.out.println("\nJPQL => " + jpql);
 		
 		if (validate) {
-			Validator.validate(sql, jpql, showValidateResults);
+			String resultado = Validator.validate(sql, jpql, saveResults);
+			System.out.println(resultado);
 		}
 	}
 
