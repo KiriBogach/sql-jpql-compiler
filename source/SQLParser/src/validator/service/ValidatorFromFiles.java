@@ -16,14 +16,19 @@ public class ValidatorFromFiles {
 	public static final String NOMBRE_FICHERO_SALIDA_VALIDACION = "/validator.txt";
 	public static final String CODIFICATION = "UTF-8";
 	
+	/* Para simular una ejecución desde java -jar */
+	public static final boolean FROM_ARGS = false;
+	public static final String FICHERO_ENTRADA = "entrada_ValidatorFromFiles.txt";
+	
+	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
-		if (args.length != 1) {
+		if (FROM_ARGS && args.length != 1) {
 			System.err.println("Debe indicar como parámetro el nombre del fichero con las querys a testear. "
 					+ "java -jar ValidatorFromFiles.jar [entradaSQL.txt]");
 			return;
 		}
 		
-		String ficheroIndicado = args[0];
+		String ficheroIndicado = (FROM_ARGS) ? args[0] : FICHERO_ENTRADA;
 		
 		final boolean validate = true;
 		final boolean saveResults = false;
