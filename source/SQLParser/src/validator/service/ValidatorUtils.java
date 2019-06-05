@@ -41,7 +41,7 @@ public class ValidatorUtils {
 
 			for (Map<String, Object> filaB : b) {
 				Collection<?> valuesB = filaB.values();
-				if (!valuesA.equals(valuesB)) {
+				if (valuesA.equals(valuesB) || (valuesA.containsAll(valuesB) && valuesB.containsAll(valuesA))) {
 					found = true;
 					break;
 				}
@@ -58,7 +58,7 @@ public class ValidatorUtils {
 
 			for (Map<String, Object> filaA : a) {
 				Collection<?> valuesA = filaA.values();
-				if (!valuesA.equals(valuesB)) {
+				if (valuesA.equals(valuesB) || (valuesA.containsAll(valuesB) && valuesB.containsAll(valuesA))) {
 					found = true;
 					break;
 				}
@@ -70,6 +70,33 @@ public class ValidatorUtils {
 		}
 
 		return true;
+	}
+	
+	private static int countMatching(List<Map<String, Object>> a, List<Map<String, Object>> b) {
+		int matches = 0;
+		for (Map<String, Object> filaA : a) {
+			Collection<?> valuesA = filaA.values();
+			for (Map<String, Object> filaB : b) {
+				Collection<?> valuesB = filaB.values();
+				if (valuesA.equals(valuesB) || (valuesA.containsAll(valuesB) && valuesB.containsAll(valuesA))) {
+					matches++;
+					break;
+				}
+			}
+		}
+
+		return matches;
+	}
+	
+	public static double getMatchingRate(List<Map<String, Object>> a, List<Map<String, Object>> b) {
+		int total = a.size();
+		int matches = countMatching(a, b);
+		
+		if (matches <= 0) {
+			return 0;
+		}
+		
+		return total/matches;
 	}
 
 	private static boolean startWithAnyEquivalenciaCampos(String campo) {
@@ -91,6 +118,13 @@ public class ValidatorUtils {
 			for (Map.Entry<String, Object> campo : fila.entrySet()) {
 				String nombreCampo = campo.getKey();
 				Object valorCampo = campo.getValue();
+
+				/*
+				 * Si no estamos buscando un valor nulo pero encontramos uno, lo ignoramos
+				 */
+				if (valorCampoBuscado != null && valorCampo == null) {
+					continue;
+				}
 
 				boolean isSameValue = valorCampo.equals(valorCampoBuscado);
 

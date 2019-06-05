@@ -54,7 +54,7 @@ public class TExpressionParser implements IExpressionVisitor {
 
 			Condicion condicion = new Condicion();
 			condicion.setOperador(lcexpr.getOperatorToken().toString());
-			condicion.setIzquierda(lcexpr.getLeftOperand().toScript());
+			condicion.setIzquierda(lcexpr.getLeftOperand().toString());
 			condicion.setDerecha(lcexpr.getRightOperand().toString());
 
 			this.condiciones.add(condicion);

@@ -9,17 +9,17 @@ import java.util.List;
 
 import javax.persistence.Table;
 
+import config.Config;
 import utils.Utils;
 
 public class ClassIntrospection {
 
-	private static final String DB_MODEL_PACKAGE = "database.model";
 	private static final char PKG_SEPARATOR = '.';
 	private static final char DIR_SEPARATOR = '/';
 	private static final String CLASS_FILE_SUFFIX = ".class";
 	private static final String BAD_PACKAGE_ERROR = "Unable to get resources from path '%s'. Are you sure the package '%s' exists?";
 
-	private static List<Class<?>> clasesJPA = ClassIntrospection.find(DB_MODEL_PACKAGE);
+	private static List<Class<?>> clasesJPA = ClassIntrospection.find(Config.DB_MODEL_PACKAGE);
 	
 	public static ClaseJPA getClaseJPA(String nombreClaseBuscada) {
 		Class<?> entidadJPA = ClassIntrospection.getJPATableNameAnnotation(nombreClaseBuscada);
@@ -50,6 +50,10 @@ public class ClassIntrospection {
 	 */
 	public static Class<?> getJPATableNameAnnotation(String nombreClaseBuscada) {
 		for (Class<?> clase : clasesJPA) {
+			// Si el nombre de la clase coincide con la BD, no hay @Table.
+			if (clase.getSimpleName().equalsIgnoreCase(nombreClaseBuscada)) {
+				return clase;
+			}
 			Annotation[] anotaciones = clase.getAnnotations();
 			for (Annotation annotation : anotaciones) {
 				Table table;

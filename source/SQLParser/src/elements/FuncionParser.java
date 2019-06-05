@@ -1,6 +1,8 @@
 package elements;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class FuncionParser {
@@ -10,6 +12,7 @@ public class FuncionParser {
 	// Luego, EclipseLink
 	// Por último delegamos en BD
 	
+	@SuppressWarnings("unused")
 	public static String parse(String funcion) {
 		// Parseamos solo las funciones definidas en SQL92
 		FuncionSQL92 funcionSQL92;
@@ -23,6 +26,9 @@ public class FuncionParser {
 		// Si encontramos una equivalencia con JPQL la devolvemos
 		FuncionJPQL funcionJQPL = SQL92_JPQL.get(funcionSQL92);
 		if (TRY_MAPPING_SQL92_JPQL && funcionJQPL != null) {
+			if (SQL92_SIN_PARENTESIS.contains(funcionJQPL)) {
+				return funcionJQPL.toString();
+			}
 			return funcionJQPL.toString() + "(";
 		}
 
@@ -30,7 +36,7 @@ public class FuncionParser {
 		FuncionEclipseLink funcionEclipseLink = SQL92_EclipseLink.get(funcionSQL92);
 		if (TRY_MAPPING_SQL92_EclipseLink && funcionEclipseLink != null) {
 			// OPERATOR('funcion ', datos)
-			return "OPERATOR('" + funcionEclipseLink.toString() + "',";
+			return "OPERATOR('" + funcionEclipseLink.toString() + "', ";
 		}
 
 		return DBDelegation(funcion);
@@ -38,17 +44,20 @@ public class FuncionParser {
 	
 	public static String DBDelegation(String funcion) {
 		// FUNC('funcion', datos)
-		return "FUNC('" + funcion + "',";
+		return "FUNC('" + funcion + "', ";
 	}
 	
 
 	// Para activar/desactivar el parseo de las tecnologías
 	// Si ambas se desactivan, siempre delegamos en BD
 	private static final boolean TRY_MAPPING_SQL92_JPQL = true;
-	private static final boolean TRY_MAPPING_SQL92_EclipseLink = true;
+	private static final boolean TRY_MAPPING_SQL92_EclipseLink = false;
 
 	public static Map<FuncionSQL92, FuncionJPQL> SQL92_JPQL = initializeMappingSQL92_JPQL();
 	public static Map<FuncionSQL92, FuncionEclipseLink> SQL92_EclipseLink = initializeMappingSQL92_EclipseLink();
+	
+	// Para las funciones que no requieran paréntesis
+	public static List<FuncionJPQL> SQL92_SIN_PARENTESIS = Arrays.asList(FuncionJPQL.CURRENT_DATE);
 
 	private static Map<FuncionSQL92, FuncionJPQL> initializeMappingSQL92_JPQL() {
 		Map<FuncionSQL92, FuncionJPQL> mapa = new HashMap<>();
@@ -105,7 +114,7 @@ public class FuncionParser {
 		mapa.put(FuncionSQL92.NVL, 				FuncionEclipseLink.Nvl);
 		mapa.put(FuncionSQL92.POWER, 			FuncionEclipseLink.Power);
 		mapa.put(FuncionSQL92.REPLACE, 			FuncionEclipseLink.Replicate); // ???
-		mapa.put(FuncionSQL92.ROUND, 			FuncionEclipseLink.Round);
+		//mapa.put(FuncionSQL92.ROUND, 			FuncionEclipseLink.Round);
 		mapa.put(FuncionSQL92.SIGN, 			FuncionEclipseLink.Sign);
 		mapa.put(FuncionSQL92.SIN, 				FuncionEclipseLink.Sin);
 		mapa.put(FuncionSQL92.ASIN, 			FuncionEclipseLink.Asin);

@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import exceptions.SQLParserException;
+import exceptions.ValidationException;
 import transformer.factory.JPQLTransformerFactory;
 import transformer.factory.JPQLTransformers;
 import transformer.service.JPQLTransformer;
@@ -48,15 +50,29 @@ public class ValidatorFromFiles {
 			while (sql != null) {
 				String jpql = "";
 				String validation = "";
+				String error = "";
+				
 				try {
+					
 					jpql = transfomer.transform(sql);
 					if (validate) {
 						validation = Validator.validate(sql, jpql, saveResults);
 					}
+				} catch (SQLParserException ex) {
+					error = "Error SQL Parser";
+				} catch (ValidationException ex) {
+					error = "Error Validación";
 				} catch (Exception ex) {
-					jpql = "ERROR";
-					validation = "ERROR";
-				} finally {
+					error = "Error JPQL Transformer";
+				}
+				
+				finally {
+					if (!error.isEmpty()) {
+						if (jpql == null || jpql.isEmpty()) {
+							jpql = error;
+						}
+						validation = error;
+					}
 					writerSql.println(sql);
 					writerJpql.println(jpql);
 					if (validate) {

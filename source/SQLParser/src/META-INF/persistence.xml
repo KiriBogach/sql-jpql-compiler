@@ -3,23 +3,35 @@
 	xmlns="http://xmlns.jcp.org/xml/ns/persistence"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
-	<persistence-unit name="W3Schools-Laboratory"
+	<persistence-unit name="SQL_JPQL_PARSER_PU"
 		transaction-type="RESOURCE_LOCAL">
-		<class>database.model.Category</class>
-		<class>database.model.Customer</class>
-		<class>database.model.CustomersExtra</class>
-		<class>database.model.Employee</class>
-		<class>database.model.OrderDetail</class>
-		<class>database.model.Order</class>
-		<class>database.model.Product</class>
-		<class>database.model.Shipper</class>
-		<class>database.model.Supplier</class>
+		<class>database.sakila.Actor</class>
+		<class>database.sakila.Address</class>
+		<class>database.sakila.Category</class>
+		<class>database.sakila.City</class>
+		<class>database.sakila.Country</class>
+		<class>database.sakila.Customer</class>
+		<class>database.sakila.Film</class>
+		<class>database.sakila.FilmActor</class>
+		<class>database.sakila.FilmActorPK</class>
+		<class>database.sakila.FilmCategory</class>
+		<class>database.sakila.FilmCategoryPK</class>
+		<class>database.sakila.FilmText</class>
+		<class>database.sakila.Inventory</class>
+		<class>database.sakila.Language</class>
+		<class>database.sakila.Payment</class>
+		<class>database.sakila.Rental</class>
+		<class>database.sakila.Staff</class>
+		<class>database.sakila.Store</class>
 
 		<properties>
+			<property name="eclipselink.weaving" value="static"/>
+			<property name="eclipselink.logging.level" value="OFF" />
+			
 			<property name="javax.persistence.jdbc.driver"
 				value="com.mysql.jdbc.Driver" />
 			<property name="javax.persistence.jdbc.url"
-				value="jdbc:mysql://localhost:3306/w3schools" />
+				value="jdbc:mysql://localhost:3306/sakila" />
 			<property name="javax.persistence.jdbc.user" value="root" />
 			<property name="javax.persistence.jdbc.password" value="" />
 		</properties>

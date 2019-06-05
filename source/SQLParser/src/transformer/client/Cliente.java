@@ -126,8 +126,15 @@ public class Cliente {
 		
 		//sql = "SELECT * FROM employees LEFT JOIN orders ON orders.EmployeeID = employees.EmployeeID";
 		//sql = "SELECT p.*, c.categoryid FROM Products p JOIN Categories c ON 1=1";
-		sql = "SELECT * FROM Customers, Orders WHERE customers.customerID = orders.customerid";
+		sql = "SELECT replacement_cost AS ReplacementCost, replacement_cost / 5 AS DecimalRentalRate, replacement_cost DIV 5 AS IntegerRentalRate, replacement_cost % 5 AS RemainderRentalRate FROM film";
+		sql = "SELECT rental_rate AS RentalRate, rental_rate + 3 * 4 - 1 AS Result1, rental_rate * 4 - 1 AS Result2, rental_rate + 3 * 4 -1 AS Result3, rental_rate * 4 AS Result4 FROM film";
 		
+		sql = "SELECT actor.first_name, actor.last_name FROM film_actor INNER JOIN actor ON film_actor.actor_id = actor.actor_id GROUP BY actor.first_name, actor.last_name";
+		sql = "SELECT actor_id, MAX(film_id) FROM film_actor GROUP BY actor_id";
+
+		//sql = "SELECT film.film_id, film.title, film.release_year, actor.actor_id, actor.first_name, actor.last_name FROM film INNER JOIN film_actor ON film_actor.film_id = film.film_id INNER JOIN actor ON actor.actor_id = film.actor_id";
+		sql = "SELECT * FROM actor INNER JOIN film ON actor.film_id = film.film_id WHERE film.title = 'Academy Dinosaur'";
+		sql = "SELECT * FROM address ORDER BY district, postal_code DESC";
 		System.out.println("SQL  => " + sql + "\n");
 		
 		String jpql = transfomer.transform(sql);

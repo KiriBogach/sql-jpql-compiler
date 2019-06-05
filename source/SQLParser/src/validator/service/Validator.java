@@ -22,13 +22,26 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Session;
 
+import config.Config;
+import exceptions.ValidationException;
+
 public class Validator {
 
 	public static final String FOLDER_SAVE_RESULTS = "resultados/";
-	
+
+	public static String validate(String sql, String jpql, boolean saveResults) throws ValidationException {
+		try {
+			return validateProcess(sql, jpql, saveResults);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw new ValidationException();
+		}
+
+	}
+
 	@SuppressWarnings("unchecked")
-	public static String validate(String sql, String jpql, boolean saveResults) throws Exception {
-		EntityManagerFactory emf = Persistence.createEntityManagerFactory("W3Schools-Laboratory");
+	private static String validateProcess(String sql, String jpql, boolean saveResults) throws Exception {
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory(Config.PU);
 		EntityManager em = emf.createEntityManager();
 
 		// final String sqlInput = "SELECT p.*, c.categoryid FROM Products p JOIN
@@ -46,7 +59,12 @@ public class Validator {
 
 		// JPQL QUERY - La que sacamos con el parser
 		Query jpqlQuery = em.createQuery(jpqlOutput);
-		jpqlQuery.setHint(QueryHints.RESULT_TYPE, ResultType.Map);
+
+		try {
+			jpqlQuery.setHint(QueryHints.RESULT_TYPE, ResultType.Map);
+		} catch (IllegalArgumentException ex) {
+
+		}
 
 		// JPQL convertida en SQL para ser lanzada en la BD.
 		Session session = em.unwrap(JpaEntityManager.class).getActiveSession();
@@ -107,18 +125,18 @@ public class Validator {
 		if (saveResults) {
 			// Escribimos los resultados en los ficheros
 			PrintWriter writer;
-			
+
 			String folder = FOLDER_SAVE_RESULTS + ValidatorUtils.getNowFileStatement();
 			ValidatorUtils.createFolder(folder);
 
 			writer = new PrintWriter(folder + "/sql_input.txt", "UTF-8");
 			writer.println(sqlInput);
 			writer.close();
-			
+
 			writer = new PrintWriter(folder + "/jpql_output.txt", "UTF-8");
 			writer.println(jpqlOutput);
 			writer.close();
-			
+
 			writer = new PrintWriter(folder + "/sql_results.txt", "UTF-8");
 			writer.println(filasSqlOriginal);
 			writer.close();
@@ -127,29 +145,37 @@ public class Validator {
 			writer.println(filasJpqlConvertida);
 			writer.close();
 		}
-		
+
 		String resultado;
+		boolean error = false;
+		double rate = ValidatorUtils.getMatchingRate(filasSqlOriginal, filasJpqlConvertida);
 
 		// Comparamos si los resultados son iguales
 		if (resultadoSqlOriginal.size() != filasJpqlConvertida.size()) {
 			resultado = "Resultado distinto. Número de filas distintas";
+			error = true;
 		} else if (filasSqlOriginal.equals(filasJpqlConvertida)) {
 			resultado = "Resultado idéntico.";
 		} else if (filasSqlOriginal.containsAll(filasJpqlConvertida)
 				&& filasJpqlConvertida.containsAll(filasSqlOriginal)) {
 			resultado = "Mismo contenido, distinto orden.";
-		} else if (ValidatorUtils.sameValuesWithPreconditions(filasSqlOriginal, filasJpqlConvertida)) {
+		} else if (ValidatorUtils.sameValuesWithPreconditions(filasSqlOriginal, filasJpqlConvertida)
+				|| ValidatorUtils.sameValues(filasSqlOriginal, filasJpqlConvertida)) {
+
 			/*
 			 * Esto ocurre cuando cogemos un COUNT(*), en SQL la cabecera será COUNT(*) en
 			 * JPQL COUNT(id)
 			 */
-			resultado = "Mismo resultado, cabeceras controladas.";
-		} else if (ValidatorUtils.sameValues(filasSqlOriginal, filasJpqlConvertida)) {
 			resultado = "Mismo resultado, cabeceras distintas.";
 		} else {
 			resultado = "Resultado distinto.";
+			error = true;
 		}
 		
+		if (error) {
+			resultado += " Rate: " + rate * 100 + " %";
+		}
+
 		return resultado;
 	}
 

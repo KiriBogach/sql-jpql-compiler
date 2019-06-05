@@ -74,6 +74,10 @@ public class Utils {
 			return entrada;
 		}
 		
+		return transformToJPAFormat(entrada);
+	}
+	
+	public static String transformToJPAFormat(String entrada) {
 		String salida = entrada.toLowerCase();
 		while (salida.contains("_")) {
 			salida = salida.replaceFirst("_[a-z]",
@@ -101,4 +105,5 @@ public class Utils {
 	public static String addParentesis(String entrada) {
 		return "(" + entrada + ")";
 	}
+	
 }

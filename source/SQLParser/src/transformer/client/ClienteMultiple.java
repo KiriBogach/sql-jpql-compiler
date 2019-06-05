@@ -3,13 +3,14 @@ package transformer.client;
 import java.util.HashMap;
 import java.util.Map;
 
+import exceptions.SQLParserException;
 import transformer.factory.JPQLTransformerFactory;
 import transformer.factory.JPQLTransformers;
 import transformer.service.JPQLTransformer;
 
 public class ClienteMultiple {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws SQLParserException {
 
 		JPQLTransformer transfomer = JPQLTransformerFactory.getInstance(JPQLTransformers.GSP);
 

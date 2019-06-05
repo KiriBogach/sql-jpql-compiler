@@ -5,6 +5,7 @@ import elements.GroupBy;
 import elements.OrderBy;
 import elements.Select;
 import elements.Where;
+import exceptions.SQLParserException;
 import transformer.api.API;
 
 public abstract class JPQLTransformerBase implements JPQLTransformer {
@@ -25,6 +26,6 @@ public abstract class JPQLTransformerBase implements JPQLTransformer {
 	}
 	
 	@Override
-	public abstract String transform(String sql);
+	public abstract String transform(String sql) throws SQLParserException;
 
 }

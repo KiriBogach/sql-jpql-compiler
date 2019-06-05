@@ -14,6 +14,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import utils.Utils;
+
 public class ClaseJPA {
 
 	private Class<?> claseReferenciada;
@@ -81,6 +83,17 @@ public class ClaseJPA {
 			if (joinColumn != null && joinColumn.name().equalsIgnoreCase(nombre)) {
 				return atributo.getValue();
 			} else if (oneToOne != null && oneToOne.mappedBy().equalsIgnoreCase(nombre)) {
+				return atributo.getValue();
+			}
+		}
+		return null;
+	}
+	
+	public AtributoClaseJPA getAtributoManyToOne(String nombre) {
+		for (Map.Entry<String, AtributoClaseJPA> atributo : atributos.entrySet()) {
+			JoinColumn joinColumn = atributo.getValue().joinColumn;
+			//ManyToOne manyToOne = atributo.getValue().manyToOne;
+			if (joinColumn != null && Utils.transformToJPAFormat(joinColumn.name()).equalsIgnoreCase(nombre)) {
 				return atributo.getValue();
 			}
 		}

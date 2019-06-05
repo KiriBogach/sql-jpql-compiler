@@ -15,6 +15,7 @@ import elements.FuncionParser;
 import elements.Having;
 import elements.Join;
 import elements.TipoJoin;
+import exceptions.SQLParserException;
 import javafx.util.Pair;
 import transformer.api.GSP_API;
 import transformer.factory.JPQLTransformerFactory;
@@ -97,7 +98,7 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 	}
 
 	@Override
-	public String transform(String sql) {
+	public String transform(String sql) throws SQLParserException {
 		this.reset();
 		this.api.parse(sql);
 
@@ -107,8 +108,8 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 		this.groupBy = this.api.getGroupBy();
 		this.orderBy = this.api.getOrderBy();
 
-		String selectQuery = "SELECT ";
-		String fromQuery = "FROM ";
+		String selectQuery = "SELECT "; // Obligatorio en JPQL
+		String fromQuery = "FROM "; // Obligatorio en JPQL
 		String whereQuery = "";
 		String groupByQuery = "";
 		String havingByQuery = "";
@@ -189,7 +190,7 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 
 	public void buildJoin() {
 		LinkedList<Join> joins = this.from.getJoins();
-		//System.out.println(joins);
+		// System.out.println(joins);
 
 		for (Join join : joins) {
 			String aliasCampo = join.getTable().getAlias();
@@ -214,7 +215,7 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 
 			// https://www.objectdb.com/java/jpa/query/jpql/from
 			Set<Condicion> condiciones = join.getCondiciones();
-			//System.out.println(condiciones);
+			// System.out.println(condiciones);
 
 			// Buscamos una relación y mapeo por '.'
 			claseJPA.getAtributoWithJoinColumn(nombreCampo);
@@ -449,10 +450,60 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 //			System.out.println("atbDer: " + atbDer);
 
 			AtributoClaseJPA atbReferenciado = atbIzq != null ? atbIzq : atbDer;
-			if (atbReferenciado.getOneToOne() == null) {
-				continue;
-			}
 
+			if (atbReferenciado != null) {
+				if (atbReferenciado.getOneToOne() == null) {
+					continue;
+				}
+
+				ClaseJPA claseReferenciada;
+				String tabla;
+				String alias;
+				if (claseFrom.equals(claseDer)) {
+					claseReferenciada = claseIzq;
+					tabla = referenciaIzquierda;
+					alias = referenciaDerecha;
+				} else if (claseFrom.equals(claseIzq)) {
+					claseReferenciada = claseDer;
+					tabla = referenciaDerecha;
+					alias = referenciaIzquierda;
+				} else {
+					// Si no se encuentra el mapping, no se puede hacer y lo saltamos
+					continue;
+				}
+
+				String referencia;
+				String mappedBy = atbReferenciado.getOneToOne().mappedBy();
+
+				if (!Utils.isEmpty(mappedBy)) {
+					/*
+					 * Si tenemos el propio mapping en la clase lo indicamos Al menos, una de las
+					 * dos clases debe tener:
+					 * 
+					 * @OneToOne(mappedBy="")
+					 */
+					referencia = mappedBy;
+				} else {
+					// Sino, lo buscamos en la otra clase
+					referencia = claseReferenciada.getAtributoMappedByOneToOne(atbReferenciado.getNombre()).getNombre();
+				}
+
+				String joinResult = tipoJoinString + " " + tabla + "." + referencia + " " + alias;
+				return new Pair<String, Condicion>(joinResult, condicion);
+			}
+			// No hay @OneToOne
+
+			// Miramos @ManyToOne
+			atbIzq = claseIzq.getAtributoManyToOne(campoValor);
+			atbDer = claseDer.getAtributoManyToOne(campoValor);
+
+			atbReferenciado = atbIzq != null ? atbIzq : atbDer;
+
+//			System.out.println("campoFuncional: " + campoValor);
+//			System.out.println("atbIzq: " + atbIzq);
+//			System.out.println("atbDer: " + atbDer);
+
+			@SuppressWarnings("unused")
 			ClaseJPA claseReferenciada;
 			String tabla;
 			String alias;
@@ -469,24 +520,11 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 				continue;
 			}
 
-			String referencia;
-			String mappedBy = atbReferenciado.getOneToOne().mappedBy();
-
-			if (!Utils.isEmpty(mappedBy)) {
-				/*
-				 * Si tenemos el propio mapping en la clase lo indicamos Al menos, una de las
-				 * dos clases debe tener:
-				 * 
-				 * @OneToOne(mappedBy="")
-				 */
-				referencia = mappedBy;
-			} else {
-				// Sino, lo buscamos en la otra clase
-				referencia = claseReferenciada.getAtributoMappedByOneToOne(atbReferenciado.getNombre()).getNombre();
-			}
+			String referencia = "TODO";
 
 			String joinResult = tipoJoinString + " " + tabla + "." + referencia + " " + alias;
 			return new Pair<String, Condicion>(joinResult, condicion);
+
 		}
 
 		// Si no se encutra, retornamos null
@@ -495,8 +533,8 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 
 	private Pair<String, String> getTableFromAtributo(String atributoBuscado) {
 		String atributoNormalizado = Utils.getJPAFormat(atributoBuscado);
-		
-		//Pair<String, ClaseJPA> pairJoinColumn = null;
+
+		// Pair<String, ClaseJPA> pairJoinColumn = null;
 
 		for (Map.Entry<String, ClaseJPA> claseBuscada : this.mappingAliasClase.entrySet()) {
 			String alias = claseBuscada.getKey();
@@ -506,51 +544,51 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 			if (atributoEnClase != null) {
 				return new Pair<>(alias, atributoEnClase);
 			}
-			
+
 			AtributoClaseJPA atributoJoinColumn = clase.getAtributoWithJoinColumn(atributoNormalizado);
 			if (Utils.isEmpty(atributoEnClase) && atributoJoinColumn != null) {
 				/*
 				 * @ManyToOne
-				 * @JoinColumn(name="ProductID")
-				 * private (Product) product; --> claseTipo
+				 * 
+				 * @JoinColumn(name="ProductID") private (Product) product; --> claseTipo
 				 */
 				Class<?> claseTipo = atributoJoinColumn.getTipo();
 				ClaseJPA claseJPATipo = ClassIntrospection.getClaseJPA(claseTipo);
 				String nombreAtributoPK = claseJPATipo.getAtributoID();
-				
+
 				return new Pair<>(alias, atributoJoinColumn.getNombre() + "." + nombreAtributoPK);
 			}
 
 		}
-		
+
 		return null;
 	}
-	
+
 	private Pair<String, String> getPrimaryKeyOfRelation(String atributoBuscado) {
 		String atributoNormalizado = Utils.getJPAFormat(atributoBuscado);
-		
-		//Pair<String, ClaseJPA> pairJoinColumn = null;
+
+		// Pair<String, ClaseJPA> pairJoinColumn = null;
 
 		for (Map.Entry<String, ClaseJPA> claseBuscada : this.mappingAliasClase.entrySet()) {
 			String alias = claseBuscada.getKey();
 			ClaseJPA clase = claseBuscada.getValue();
-			
+
 			AtributoClaseJPA atributoJoinColumn = clase.getAtributoWithJoinColumn(atributoNormalizado);
 			if (atributoJoinColumn != null) {
 				/*
 				 * @ManyToOne
-				 * @JoinColumn(name="ProductID")
-				 * private (Product) product; --> claseTipo
+				 * 
+				 * @JoinColumn(name="ProductID") private (Product) product; --> claseTipo
 				 */
 				Class<?> claseTipo = atributoJoinColumn.getTipo();
 				ClaseJPA claseJPATipo = ClassIntrospection.getClaseJPA(claseTipo);
 				String nombreAtributoPK = claseJPATipo.getAtributoID();
-				
+
 				return new Pair<>(alias, atributoJoinColumn.getNombre() + "." + nombreAtributoPK);
 			}
 
 		}
-		
+
 		return null;
 	}
 
@@ -567,7 +605,7 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 
 		return null;
 	}
-	
+
 	private String parseCondition(String condicion) {
 		return this.parseCondition(condicion, false);
 	}
@@ -583,13 +621,13 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 			// ... FROM TABLA WHERE tabla.atr
 			String referencia = Utils.getFieldTable(condicion);
 			String rawColumn = Utils.getRawColumnValue(condicion);
-			
+
 			if (this.mappingNombreBDAlias.containsKey(referencia)) {
 				// ... FROM TABLA WHERE tabla.atr
 				String alias = this.mappingNombreBDAlias.get(referencia);
 				ClaseJPA clase = this.mappingAliasClase.get(alias);
 				String nombreCampo = clase.getAttributeRealName(rawColumn);
-				
+
 				// Miramos el caso de:
 				// orders.customerid === b.customer.customerID
 				// orders.customerid no existe, pero existe la entidad customer
@@ -622,8 +660,15 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 
 			// Si encontramos una subquery la parseamos y la devolvemos
 			if (Utils.isSubquery(condicion)) {
-				String subqueryParseada = JPQLTransformerFactory.getInstance(JPQLTransformers.GSP).transform(condicion);
-				return Utils.addParentesis(subqueryParseada); // this.transform(condicion);
+				String subqueryParseada;
+
+				// Se intenta parsear la subquery
+				try {
+					subqueryParseada = JPQLTransformerFactory.getInstance(JPQLTransformers.GSP).transform(condicion);
+					return Utils.addParentesis(subqueryParseada); // this.transform(condicion);
+				} catch (SQLParserException e) {
+				}
+
 			}
 
 			// Si empieza y acaba con paréntesis tenemos IN (2, 'abc') ...
@@ -645,6 +690,7 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 
 			// Si encontramos una función de agregación ...
 			String agregatteFunction = this.parseAgregatteFunction(condicion);
+			//System.out.println(agregatteFunction);
 			if (agregatteFunction != null) {
 				return agregatteFunction;
 			}
@@ -678,29 +724,41 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 	}
 
 	private String parseCondicionExpressions(Set<Condicion> condiciones, String rawExpression) {
-		Set<String> condionesToChange = new HashSet<>();
+		Set<String> condicionesToChange = new HashSet<>();
+		// System.out.println(condiciones);
+		// System.out.println(rawExpression);
 
 		for (Condicion condicion : condiciones) {
 			String izq = condicion.getIzquierda();
 			String der = condicion.getDerecha();
 			if (!Utils.isEmpty(izq)) {
 				if (!izq.startsWith("'") && !izq.startsWith("(") && !Utils.isNumeric(izq)) {
-					condionesToChange.add(izq);
+					condicionesToChange.add(izq);
 				} else if (izq.startsWith("(") && izq.endsWith(")")) {
-					condionesToChange.add(izq);
+					condicionesToChange.add(izq);
 				}
 			}
 			if (!Utils.isEmpty(der)) {
 				if (!der.startsWith("'") && !der.startsWith("(") && !Utils.isNumeric(der)) {
-					condionesToChange.add(der);
+					condicionesToChange.add(der);
 				} else if (der.startsWith("(") && der.endsWith(")")) {
-					condionesToChange.add(der);
+					condicionesToChange.add(der);
 				}
+			}
+
+			// Caso WHERE campo BETWEEN 50 AND 54
+			// Queremos sustituir campo
+			if (condicion.getOperador().equalsIgnoreCase("BETWEEN")) {
+				String operacion = condicion.getOperador() + " " + condicion.getIzquierda() + " AND "
+						+ condicion.getDerecha();
+				condicionesToChange.add(rawExpression.replaceAll(operacion, "").trim());
 			}
 		}
 
+		// System.out.println(condicionesToChange);
+
 		String treatedWhereString = rawExpression;
-		for (String condicion : condionesToChange) {
+		for (String condicion : condicionesToChange) {
 
 			// Si la condicion parseada es igual a la condición original,
 			// no hacemos sustitución; ejemplo un literal
@@ -758,8 +816,13 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 		}
 
 		String contenidoParseado = String.join(", ", parametrosEncontrados);
+		String retorno = funcionParseada + contenidoParseado;
 
-		return funcionParseada + contenidoParseado + ")";
+		if (funcionParseada.contains("(")) {
+			retorno += ")";
+		}
+
+		return retorno;
 	}
 
 	private String getTipoJoinString(TipoJoin tipoJoin) {
