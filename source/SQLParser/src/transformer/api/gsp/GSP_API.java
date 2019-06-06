@@ -1,4 +1,4 @@
-package transformer.api;
+package transformer.api.gsp;
 
 import elements.From;
 import elements.GroupBy;
@@ -28,7 +28,7 @@ import gudusoft.gsqlparser.nodes.TResultColumn;
 import gudusoft.gsqlparser.nodes.TResultColumnList;
 import gudusoft.gsqlparser.nodes.TWhereClause;
 import gudusoft.gsqlparser.stmt.TSelectSqlStatement;
-import texpressionparser.TExpressionParser;
+import transformer.api.API;
 
 public class GSP_API implements API {
 

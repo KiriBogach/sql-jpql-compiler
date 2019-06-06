@@ -135,6 +135,28 @@ public class Cliente {
 		//sql = "SELECT film.film_id, film.title, film.release_year, actor.actor_id, actor.first_name, actor.last_name FROM film INNER JOIN film_actor ON film_actor.film_id = film.film_id INNER JOIN actor ON actor.actor_id = film.actor_id";
 		sql = "SELECT * FROM actor INNER JOIN film ON actor.film_id = film.film_id WHERE film.title = 'Academy Dinosaur'";
 		sql = "SELECT * FROM address ORDER BY district, postal_code DESC";
+		
+		
+		sql = "SELECT address, city from address JOIN city ON address.city_id = city.city_id";
+		
+		
+		sql = "SELECT film.film_id, film.title, film.release_year, actor.actor_id, actor.first_name, actor.last_name FROM film INNER JOIN film_actor ON film.film_id = film_actor.film_id INNER JOIN actor ON actor.actor_id = film_actor.actor_id";
+
+		sql = "SELECT actor.first_name, actor.last_name, COUNT(*) FROM film_actor INNER JOIN actor ON film_actor.actor_id = actor.actor_id GROUP BY actor.first_name, actor.last_name";
+		sql = "SELECT actor.first_name, actor.last_name, COUNT(*) FROM film_actor INNER JOIN actor ON film_actor.actor_id = actor.actor_id GROUP BY film_actor.actor_id";
+
+		sql = "SELECT actor.first_name, actor.last_name, film_actor.* FROM actor INNER JOIN film_actor ON actor.actor_id = film_actor.actor_id ORDER BY actor_id";
+
+		sql = "SELECT film.film_id, film_actor.actor_id FROM film INNER JOIN film_actor ON film_actor.film_id = film.film_id WHERE film.film_id = 1";
+		
+		sql = "SELECT * FROM film, film_actor WHERE film_actor.film_id = film.film_id";
+		sql = "SELECT film.film_id, film.title, film.release_year, actor.actor_id, actor.first_name, actor.last_name FROM film INNER JOIN film_actor ON film.film_id = film_actor.film_id INNER JOIN actor ON actor.actor_id = film_actor.actor_id;";
+		
+
+		sql = "SELECT COUNT(*), Country " 
+				+ "FROM Customers " 
+				+ "GROUP BY Country "
+				+ "HAVING COUNT(CustomerID) > 2 ";
 		System.out.println("SQL  => " + sql + "\n");
 		
 		String jpql = transfomer.transform(sql);
@@ -142,7 +164,7 @@ public class Cliente {
 		System.out.println("\nJPQL => " + jpql);
 		
 		if (validate) {
-			String resultado = Validator.validate(sql, jpql, saveResults);
+			String resultado = Validator.validate(sql, jpql, saveResults).getMensaje();
 			System.out.println(resultado);
 		}
 	}

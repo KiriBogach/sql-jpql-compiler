@@ -1,4 +1,4 @@
-package transformer.service;
+package transformer.service.gsp;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,9 +17,10 @@ import elements.Join;
 import elements.TipoJoin;
 import exceptions.SQLParserException;
 import javafx.util.Pair;
-import transformer.api.GSP_API;
+import transformer.api.gsp.GSP_API;
 import transformer.factory.JPQLTransformerFactory;
 import transformer.factory.JPQLTransformers;
+import transformer.service.JPQLTransformerBase;
 import utils.Utils;
 import utils.introspection.ClaseJPA;
 import utils.introspection.ClaseJPA.AtributoClaseJPA;
@@ -131,7 +132,7 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 
 		// JOIN
 		if (!joinEncontrados.isEmpty()) {
-			fromQuery += String.join("", joinEncontrados);
+			fromQuery += String.join(" ", joinEncontrados);
 		}
 
 		// SELECT
@@ -139,22 +140,22 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 
 		// WHERE
 		if (!whereEncontrados.isEmpty()) {
-			whereQuery += "WHERE " + String.join(" ", whereEncontrados) + " ";
+			whereQuery += " WHERE " + String.join(" ", whereEncontrados) + " ";
 		}
 
 		// GROUP BY
 		if (!groupByEncontrados.isEmpty()) {
-			groupByQuery += "GROUP BY " + String.join(", ", groupByEncontrados) + " ";
+			groupByQuery += " GROUP BY " + String.join(", ", groupByEncontrados) + " ";
 		}
 
 		// HAVING
 		if (!havingEncontrados.isEmpty()) {
-			havingByQuery += "HAVING " + String.join(" ", havingEncontrados) + " ";
+			havingByQuery += " HAVING " + String.join(" ", havingEncontrados) + " ";
 		}
 
 		// ORDER BY
 		if (!orderByEncontrados.isEmpty()) {
-			orderByQuery += "ORDER BY " + String.join(", ", orderByEncontrados) + " ";
+			orderByQuery += " ORDER BY " + String.join(", ", orderByEncontrados) + " ";
 		}
 
 		return (selectQuery + fromQuery + whereQuery + groupByQuery + havingByQuery + orderByQuery).trim();
@@ -332,8 +333,12 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 			this.orderByEncontrados.add(condicion);
 		}
 	}
-
+	
 	private String parseAsterisco(String nombreRaw, String tablaReferida) {
+		return this.parseAsterisco(nombreRaw, tablaReferida, true);
+	}
+
+	private String parseAsterisco(String nombreRaw, String tablaReferida, boolean addAll) {
 
 		if (nombreRaw.equals("*")) {
 			String campoFormado = "";
@@ -341,7 +346,13 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 			if (Utils.isEmpty(tablaReferida)) {
 				// SELECT * FROM T1, T2 --> SELECT a, b FROM T1 a, T2 b
 				// SELECT * FROM T1 --> SELECT a FROM T1 a
-				campoFormado += String.join(", ", this.mappingAliasClase.keySet());
+				if (addAll) {
+					campoFormado += String.join(", ", this.mappingAliasClase.keySet());
+				} else {
+					// Cogemos el primero.
+					// Util para COUNT(*) --> COUNT(a) y no COUNT(a,b)
+					campoFormado += this.mappingAliasClase.keySet().toArray()[0];
+				}
 			} else {
 				// SELECT a.* FROM T1 a, T2 b --> SELECT a FROM T1 a, T2 b
 				if (this.mappingAliasClase.containsKey(tablaReferida)) {
@@ -493,7 +504,9 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 			}
 			// No hay @OneToOne
 
+			
 			// Miramos @ManyToOne
+			/*
 			atbIzq = claseIzq.getAtributoManyToOne(campoValor);
 			atbDer = claseDer.getAtributoManyToOne(campoValor);
 
@@ -503,7 +516,7 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 //			System.out.println("atbIzq: " + atbIzq);
 //			System.out.println("atbDer: " + atbDer);
 
-			@SuppressWarnings("unused")
+			/*@SuppressWarnings("unused")
 			ClaseJPA claseReferenciada;
 			String tabla;
 			String alias;
@@ -524,6 +537,7 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 
 			String joinResult = tipoJoinString + " " + tabla + "." + referencia + " " + alias;
 			return new Pair<String, Condicion>(joinResult, condicion);
+			*/
 
 		}
 
@@ -803,7 +817,7 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 				parametrosEncontrados.add(aliasNombreReal.getKey() + "." + aliasNombreReal.getValue());
 			} else {
 				String tablaReferida = Utils.getRawFieldTable(parametro);
-				String asterisco = this.parseAsterisco(parametro, tablaReferida);
+				String asterisco = this.parseAsterisco(parametro, tablaReferida, false);
 
 				if (!Utils.isEmpty(asterisco)) {
 					parametrosEncontrados.add(asterisco);

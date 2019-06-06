@@ -56,12 +56,14 @@ public class Utils {
 		 * ... luego viene otra sustitución por otro lado del campo b.credit_data -> b.creditData
 		 * ... de este modo no volvemos a sustituir el primer caso.
 		 */
-		
 		// Para escapar caracteres en la expresión regular como '(', ')'
 		String sustitucionNormalizada = Pattern.quote(sustitucion);
 		
+		// No cosideramos lo que tenga delante:
+		// ' . _
+		
 		// Construimos la expresión regular
-		String re = "(?<!')(?<!\\.)" + sustitucionNormalizada + "(?!')"; 
+		String re = "(?<!')(?<!\\.)(?<!\\_)" + sustitucionNormalizada + "(?!')"; 
 		
 		//System.out.println("cadena: " + cadena);
 		//System.out.println("re: " + re);

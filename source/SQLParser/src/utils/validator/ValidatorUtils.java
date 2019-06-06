@@ -1,4 +1,4 @@
-package validator.service;
+package utils.validator;
 
 import java.io.File;
 import java.text.DateFormat;

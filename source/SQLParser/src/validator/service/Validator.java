@@ -24,12 +24,14 @@ import org.eclipse.persistence.sessions.Session;
 
 import config.Config;
 import exceptions.ValidationException;
+import utils.validator.ValidatorUtils;
+import validator.model.Result;
 
 public class Validator {
 
 	public static final String FOLDER_SAVE_RESULTS = "resultados/";
 
-	public static String validate(String sql, String jpql, boolean saveResults) throws ValidationException {
+	public static Result validate(String sql, String jpql, boolean saveResults) throws ValidationException {
 		try {
 			return validateProcess(sql, jpql, saveResults);
 		} catch (Exception ex) {
@@ -40,7 +42,7 @@ public class Validator {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static String validateProcess(String sql, String jpql, boolean saveResults) throws Exception {
+	private static Result validateProcess(String sql, String jpql, boolean saveResults) throws Exception {
 		EntityManagerFactory emf = Persistence.createEntityManagerFactory(Config.PU);
 		EntityManager em = emf.createEntityManager();
 
@@ -146,19 +148,19 @@ public class Validator {
 			writer.close();
 		}
 
-		String resultado;
-		boolean error = false;
+		String mensaje;
+		boolean fracaso = false;
 		double rate = ValidatorUtils.getMatchingRate(filasSqlOriginal, filasJpqlConvertida);
 
 		// Comparamos si los resultados son iguales
 		if (resultadoSqlOriginal.size() != filasJpqlConvertida.size()) {
-			resultado = "Resultado distinto. Número de filas distintas";
-			error = true;
+			mensaje = "Resultado distinto. Número de filas distintas";
+			fracaso = true;
 		} else if (filasSqlOriginal.equals(filasJpqlConvertida)) {
-			resultado = "Resultado idéntico.";
+			mensaje = "Resultado idéntico.";
 		} else if (filasSqlOriginal.containsAll(filasJpqlConvertida)
 				&& filasJpqlConvertida.containsAll(filasSqlOriginal)) {
-			resultado = "Mismo contenido, distinto orden.";
+			mensaje = "Mismo contenido, distinto orden.";
 		} else if (ValidatorUtils.sameValuesWithPreconditions(filasSqlOriginal, filasJpqlConvertida)
 				|| ValidatorUtils.sameValues(filasSqlOriginal, filasJpqlConvertida)) {
 
@@ -166,17 +168,17 @@ public class Validator {
 			 * Esto ocurre cuando cogemos un COUNT(*), en SQL la cabecera será COUNT(*) en
 			 * JPQL COUNT(id)
 			 */
-			resultado = "Mismo resultado, cabeceras distintas.";
+			mensaje = "Mismo resultado, cabeceras distintas.";
 		} else {
-			resultado = "Resultado distinto.";
-			error = true;
+			mensaje = "Resultado distinto.";
+			fracaso = true;
 		}
 		
-		if (error) {
-			resultado += " Rate: " + rate * 100 + " %";
+		if (fracaso) {
+			mensaje += " Rate: " + rate * 100 + " %";
 		}
-
-		return resultado;
+		
+		return new Result(sqlInput, jpqlConvertida, resultadoSqlOriginal.size(), resultadoJpqlConvertida.size(), !fracaso, mensaje, rate);
 	}
 
 }

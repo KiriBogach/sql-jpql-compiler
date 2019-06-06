@@ -1,7 +1,7 @@
 package transformer.factory;
 
-import transformer.service.GSP_JPQLTransformer;
 import transformer.service.JPQLTransformer;
+import transformer.service.gsp.GSP_JPQLTransformer;
 
 public class JPQLTransformerFactory {
 

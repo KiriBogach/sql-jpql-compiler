@@ -173,7 +173,6 @@ public class ClienteMultiple {
 		queries.put(sql, null);
 
 		for (Map.Entry<String, String> pair : queries.entrySet()) {
-			//System.out.println(pair);
 			pair.setValue(transfomer.transform(pair.getKey()));
 		}
 
