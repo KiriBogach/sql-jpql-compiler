@@ -96,7 +96,7 @@ public class ValidatorFromFiles {
 					if (validate) {
 						resultado = Validator.validate(sql, jpql, saveResults);
 						validation = resultado.getMensaje();
-						registros = resultado.getRegistrosOriginal();
+						registros = resultado.getRegistrosSQL();
 						listaResultados.addResult(resultado);
 					}
 				} catch (SQLParserException ex) {
@@ -114,6 +114,9 @@ public class ValidatorFromFiles {
 							jpql = error;
 						}
 						validation = error;
+						
+						Result resultadoErroneo = new Result(sql, jpql, error);
+						listaResultados.addResult(resultadoErroneo);
 					}
 					writerSql.println(sql);
 					writerJpql.println(jpql);

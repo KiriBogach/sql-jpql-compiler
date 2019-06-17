@@ -4,65 +4,90 @@ import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.PROPERTY)
+@XmlType(propOrder = {"sql", "jpql", "sqlTransformada", "exito", "mensaje", "rateExito", "registrosSQL", "registrosSQLTransformada"})
 public class Result implements Serializable {
    private static final long serialVersionUID = 1L;
 
-	private String queryOriginal;
-	private String queryTransformada;
-	private int registrosOriginal;
-	private int registrosTransformada;
-
+	private String sql;
+	private String jpql;
+	private String sqlTransformada;
+	
 	private boolean exito;
 	private String mensaje;
+
 	private double rateExito;
+	private int registrosSQL;
+	private int registrosSQLTransformada;
 
 	public Result() {
 
 	}
 
-	public Result(String queryOriginal, String queryTransformada, int registrosOriginal, int registrosTransformada,
+	public Result(String sql, String jpql, String sqlTransformada, int registrosSQL, int registrosSQLTransformada,
 			boolean exito, String mensaje, double rateExito) {
-		this.queryOriginal = queryOriginal;
-		this.queryTransformada = queryTransformada;
-		this.registrosOriginal = registrosOriginal;
-		this.registrosTransformada = registrosTransformada;
+		super();
+		this.sql = sql;
+		this.jpql = jpql;
+		this.sqlTransformada = sqlTransformada;
+		this.registrosSQL = registrosSQL;
+		this.registrosSQLTransformada = registrosSQLTransformada;
 		this.exito = exito;
 		this.mensaje = mensaje;
 		this.rateExito = rateExito;
 	}
-
-	public String getQueryOriginal() {
-		return queryOriginal;
+	
+	public Result(String sql, String jpql, String mensaje) {
+		this.sql = sql;
+		this.jpql = jpql;
+		this.sqlTransformada = null;
+		this.registrosSQL = -1;
+		this.registrosSQLTransformada = -1;
+		this.exito = false;
+		this.mensaje = mensaje;
+		this.rateExito = 0;
 	}
 
-	public void setQueryOriginal(String queryOriginal) {
-		this.queryOriginal = queryOriginal;
+	public String getSql() {
+		return sql;
 	}
 
-	public String getQueryTransformada() {
-		return queryTransformada;
+	public void setSql(String sql) {
+		this.sql = sql;
 	}
 
-	public void setQueryTransformada(String queryTransformada) {
-		this.queryTransformada = queryTransformada;
+	public String getJpql() {
+		return jpql;
 	}
 
-	public int getRegistrosOriginal() {
-		return registrosOriginal;
+	public void setJpql(String jpql) {
+		this.jpql = jpql;
 	}
 
-	public void setRegistrosOriginal(int registrosOriginal) {
-		this.registrosOriginal = registrosOriginal;
+	public String getSqlTransformada() {
+		return sqlTransformada;
 	}
 
-	public int getRegistrosTransformada() {
-		return registrosTransformada;
+	public void setSqlTransformada(String sqlTransformada) {
+		this.sqlTransformada = sqlTransformada;
 	}
 
-	public void setRegistrosTransformada(int registrosTransformada) {
-		this.registrosTransformada = registrosTransformada;
+	public int getRegistrosSQL() {
+		return registrosSQL;
+	}
+
+	public void setRegistrosSQL(int registrosSQL) {
+		this.registrosSQL = registrosSQL;
+	}
+
+	public int getRegistrosSQLTransformada() {
+		return registrosSQLTransformada;
+	}
+
+	public void setRegistrosSQLTransformada(int registrosSQLTransformada) {
+		this.registrosSQLTransformada = registrosSQLTransformada;
 	}
 
 	public boolean isExito() {
@@ -88,5 +113,8 @@ public class Result implements Serializable {
 	public void setRateExito(double rateExito) {
 		this.rateExito = rateExito;
 	}
+	
+	
+
 
 }

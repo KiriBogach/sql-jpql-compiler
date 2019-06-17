@@ -178,7 +178,7 @@ public class Validator {
 			mensaje += " Rate: " + rate * 100 + " %";
 		}
 		
-		return new Result(sqlInput, jpqlConvertida, resultadoSqlOriginal.size(), resultadoJpqlConvertida.size(), !fracaso, mensaje, rate);
+		return new Result(sqlInput, jpqlOutput, jpqlConvertida, resultadoSqlOriginal.size(), resultadoJpqlConvertida.size(), !fracaso, mensaje, rate);
 	}
 
 }
