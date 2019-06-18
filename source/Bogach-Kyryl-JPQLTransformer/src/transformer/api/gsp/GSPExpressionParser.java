@@ -9,13 +9,13 @@ import gudusoft.gsqlparser.nodes.IExpressionVisitor;
 import gudusoft.gsqlparser.nodes.TExpression;
 import gudusoft.gsqlparser.nodes.TParseTreeNode;
 
-public class TExpressionParser implements IExpressionVisitor {
+public class GSPExpressionParser implements IExpressionVisitor {
 
 	public static boolean DEBUG = false;
 	private TExpression condition;
 	private Set<Condicion> condiciones;
 
-	public TExpressionParser(TExpression expr) {
+	public GSPExpressionParser(TExpression expr) {
 		this.condition = expr;
 		this.condiciones = new HashSet<>();
 	}

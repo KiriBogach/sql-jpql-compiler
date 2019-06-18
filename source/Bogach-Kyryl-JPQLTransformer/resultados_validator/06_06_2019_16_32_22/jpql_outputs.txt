@@ -1,0 +1,103 @@
+SELECT a.actorId, 'MyFirstValue' as SomeValue FROM Actor a
+SELECT a.actorId, 1+1 as TWO FROM Actor a
+SELECT a.actorId, FUNC('NOW', ) FROM Actor a
+SELECT CURRENT_DATE as date FROM Actor a
+SELECT FUNC('PI', ) as pi_number FROM Actor a
+SELECT MOD(45, 7) FROM Actor a
+SELECT SQRT(25) FROM Actor a
+SELECT a FROM Actor a
+SELECT a FROM City a
+SELECT a FROM City a
+SELECT a FROM Actor a  ORDER BY a.firstName
+SELECT a FROM Actor a  ORDER BY a.lastName
+SELECT a FROM Actor a  ORDER BY a.firstName DESC
+SELECT a FROM Actor a  ORDER BY a.lastName DESC
+SELECT a.firstName, a.lastName FROM Actor a
+SELECT a.firstName, a.lastName FROM Actor a  ORDER BY a.firstName DESC
+SELECT a FROM Actor a  WHERE a.actorId > 100
+SELECT a FROM Actor a  WHERE a.actorId < 100
+SELECT a.actorId, a.firstName, a.lastName FROM Actor a  WHERE a.firstName = 'Nick'
+SELECT a FROM Actor a  WHERE a.firstName = 'Nick'
+SELECT a.actorId, a.firstName, a.lastName FROM Actor a  WHERE a.firstName = 'Nick'  ORDER BY a.actorId DESC
+SELECT a.actorId, a.firstName, a.lastName FROM Actor a  WHERE a.actorId > 100  ORDER BY a.firstName, a.lastName DESC
+SELECT a FROM Actor a  WHERE 1 = 2
+SELECT a.rentalDate, a.inventory.inventoryId, a.returnDate FROM Rental a
+SELECT a.rentalDate as RentalDate, a.inventory.inventoryId as FilmListID, a.returnDate as ReturnDate FROM Rental a
+SELECT replacement_cost-rental_rate, a.filmId as FilmID, length/60 FROM Film a
+SELECT replacement_cost-rental_rate as CostDiff, a.filmId as FilmID, length/60 as TimeinHour FROM Film a
+SELECT a.rentalRate as RentalRate, rental_rate + 3 * 4 - 1 as Result1, FUNC('', rental_rate + 3) as Result2, (rental_rate + 3) as Result3, FUNC('rental_rate + ', 3 * 4) as Result4 FROM Film a
+Error SQL Parser
+SELECT a.filmId, a.description FROM Film a  WHERE a.rentalRate BETWEEN 0 AND 4  ORDER BY a.rating
+SELECT a.actor.actorId, COUNT(a) as cnt FROM FilmActor a  GROUP BY a.actor.actorId  ORDER BY cnt
+SELECT a.actor.actorId, FUNC('MAX', a.film.filmId) FROM FilmActor a  GROUP BY a.actor.actorId
+SELECT FUNC('MIN', a.actorId) FROM Actor a  WHERE a.firstName = 'PENELOPE'
+SELECT a.actorId FROM Actor a  WHERE a.firstName = 'PENELOPE'
+SELECT a FROM Actor a
+SELECT a FROM Payment a
+SELECT a.amount, FUNC('ROUND', a.amount) as Amnt, FUNC('ROUND', a.amount, 1) as Amnt1, FUNC('FLOOR', a.amount) as FloorAmnt, FUNC('CEILING', a.amount) as CeilingAmnt FROM Payment a
+SELECT 44,1) FROM Actor a
+SELECT CONCAT(a.firstName, ' ', a.lastName) as FullName FROM Actor a
+SELECT CONCAT(a.firstName, ' ', a.lastName) as FullName, CONCAT(LEFT(first_name, 2) as FirstInitial FROM Actor a
+SELECT a.rentalDate, FUNC('DAYOFWEEK', a.rentalDate) as DayOfWeek, FUNC('QUARTER', a.rentalDate) as Quarter, FUNC('WEEK', a.rentalDate) as Week, FUNC('MONTHNAME', a.rentalDate) as MonthName FROM Rental a
+SELECT a.firstName FROM Actor a
+SELECT a.actorId, a.firstName, a.lastName FROM Actor a  WHERE a.actorId = 100
+SELECT a.actorId, a.firstName, a.lastName FROM Actor a  WHERE a.firstName = 'Nick'
+SELECT a.actorId, a.firstName, a.lastName FROM Actor a  WHERE a.actorId < 100
+SELECT a.actorId, a.firstName, a.lastName FROM Actor a  WHERE a.firstName < 'Nick'
+SELECT a.actorId, a.firstName, a.lastName FROM Actor a  WHERE a.actorId > 100
+SELECT a.actorId, a.firstName, a.lastName FROM Actor a  WHERE a.firstName > 'Nick'
+SELECT a.actorId, a.firstName, a.lastName FROM Actor a  WHERE a.actorId <= 100
+SELECT a.actorId, a.firstName, a.lastName FROM Actor a  WHERE a.firstName <= 'Nick'
+SELECT a.actorId, a.firstName, a.lastName FROM Actor a  WHERE a.actorId >= 100
+SELECT a.actorId, a.firstName, a.lastName FROM Actor a  WHERE a.firstName >= 'Nick'
+SELECT a.actorId, a.firstName, a.lastName FROM Actor a  WHERE a.actorId <> 100
+SELECT a.actorId, a.firstName, a.lastName FROM Actor a  WHERE a.firstName != 'Nick'
+SELECT a FROM Actor a  WHERE a.firstName = 'KENNETH'
+SELECT a FROM Actor a  WHERE a.firstName = 'KENNETH' AND a.actorId < 100
+SELECT a FROM Actor a  WHERE a.firstName = 'KENNETH' AND a.actorId < 100 AND a.lastName = 'TORN'
+SELECT a FROM Actor a  WHERE a.firstName = 'KENNETH'
+SELECT a FROM Actor a  WHERE a.firstName = 'KENNETH' OR a.actorId < 100
+SELECT a FROM Actor a  WHERE a.firstName = 'KENNETH' OR a.actorId < 100 OR a.lastName = 'TEMPLE'
+Error SQL Parser
+SELECT a.actorId, a.firstName, a.lastName FROM Actor a  WHERE a.actorId <> 5
+SELECT a FROM Actor a  WHERE a.firstName = 'KENNETH' AND a.actorId < 100 OR a.lastName = 'TEMPLE'
+SELECT a FROM Actor a  WHERE a.firstName = 'KENNETH' OR a.lastName = 'TEMPLE' AND a.actorId < 100
+SELECT a FROM Actor a  WHERE (a.firstName = 'KENNETH' AND a.actorId < 100) OR a.lastName = 'TEMPLE'
+SELECT a FROM Actor a  WHERE a.firstName = 'KENNETH' AND (a.actorId < 100 OR a.lastName = 'TEMPLE')
+SELECT a FROM Actor a  WHERE (a.firstName = 'KENNETH' OR a.lastName = 'TEMPLE') AND a.actorId < 100
+SELECT a FROM Actor a  WHERE a.firstName = 'KENNETH' OR (a.lastName = 'TEMPLE' AND a.actorId < 100)
+Error SQL Parser
+Error SQL Parser
+SELECT a FROM Actor a  WHERE a.firstName IN ('NICK','JOHNNY','JOE','VIVIEN')
+SELECT a FROM Actor a  WHERE a.actorId IN (1,2,3,4,5,6,7,8)
+SELECT a FROM Actor a  WHERE (a.actorId = 1 OR a.actorId = 2 OR a.actorId = 3 OR a.actorId = 4 OR a.actorId = 5 OR a.actorId = 6 OR a.actorId = 7 OR a.actorId = 8)
+SELECT a FROM Actor a  WHERE a.actorId NOT IN (1,2,3,4,5,6,7)
+SELECT a FROM Actor a  WHERE a.firstName IN ('NICK','JOHNNY','JOE','VIVIEN') OR a.actorId IN (41, 107, 166) AND a.actorId IN (SELECT a.actorId FROM actor WHERE last_name = 'DEGENERES')
+SELECT a FROM Actor a  WHERE a.actorId >= 10 AND a.actorId <= 20
+SELECT a FROM Actor a  WHERE a.actorId BETWEEN 10 AND 20
+SELECT a FROM Actor a  WHERE a.actorId BETWEEN 11 AND 19
+SELECT a FROM Actor a  WHERE actor_id NOT BETWEEN 11 AND 19
+SELECT a FROM Actor a  WHERE a.firstName LIKE 'A%'
+SELECT a FROM Actor a  WHERE a.firstName LIKE 'AL%'
+SELECT a FROM Actor a  WHERE a.firstName LIKE 'A__E'
+SELECT a FROM Actor a  WHERE a.firstName LIKE 'A__E%'
+SELECT a FROM Actor a  WHERE a.firstName LIKE 'A%E%'
+Error SQL Parser
+SELECT a.city.cityId FROM Address a
+Error SQL Parser
+Error SQL Parser
+SELECT a.city.cityId FROM Address a  ORDER BY a.district
+SELECT a.city.cityId FROM Address a  ORDER BY a.district DESC
+SELECT a.city.cityId FROM Address a  ORDER BY a.district, a.postalCode DESC
+SELECT a.actorId, CONCAT(a.firstName, ' ', a.lastName) as FullName FROM Actor a  ORDER BY CONCAT(a.firstName, ' ', a.lastName)
+SELECT a.actorId, CONCAT(a.firstName, ' ', a.lastName) as FullName FROM Actor a  ORDER BY FullName
+SELECT a.actorId, CONCAT(a.firstName, ' ', a.lastName) as FullName FROM Actor a  ORDER BY 1
+SELECT a.address, a.city FROM Address a JOIN City b ON a.city.cityId = b.cityId
+SELECT a.filmId, a.title, a.releaseYear, b.actor.actorId, c.firstName, c.lastName FROM Film a INNER JOIN FilmActor b ON a.filmId = b.film.filmId INNER JOIN Actor c ON c.actorId = b.actor.actorId
+SELECT b.firstName, b.lastName, COUNT(a) FROM FilmActor a INNER JOIN Actor b ON a.actor.actorId = b.actorId GROUP BY b.firstName, b.lastName
+SELECT b.firstName, b.lastName, COUNT(a) FROM FilmActor a INNER JOIN Actor b ON a.actor.actorId = b.actorId GROUP BY a.actor.actorId
+SELECT a.firstName, a.lastName, b FROM Actor a INNER JOIN FilmActor b ON a.actorId = b.actor.actorId ORDER BY a.actorId
+SELECT COUNT(a) FROM City a  WHERE a.cityId > 5
+SELECT a.filmId, b.actor.actorId FROM Film a INNER JOIN FilmActor b ON b.film.filmId = a.filmId WHERE a.filmId = 1
+SELECT a, b FROM Film a, FilmActor b  WHERE b.film.filmId = a.filmId
+SELECT a.address, a.city FROM Address a, City b  WHERE a.city.cityId = b.cityId

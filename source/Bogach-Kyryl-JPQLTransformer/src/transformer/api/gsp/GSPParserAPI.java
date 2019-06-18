@@ -28,9 +28,9 @@ import gudusoft.gsqlparser.nodes.TResultColumn;
 import gudusoft.gsqlparser.nodes.TResultColumnList;
 import gudusoft.gsqlparser.nodes.TWhereClause;
 import gudusoft.gsqlparser.stmt.TSelectSqlStatement;
-import transformer.api.API;
+import transformer.api.ParserAPI;
 
-public class GSP_API implements API {
+public class GSPParserAPI implements ParserAPI {
 
 	protected Select select;
 	protected From from;
@@ -38,7 +38,7 @@ public class GSP_API implements API {
 	protected OrderBy orderBy;
 	protected GroupBy groupBy;
 
-	public GSP_API() {
+	public GSPParserAPI() {
 		this.select = new Select();
 		this.from = new From();
 		this.where = new Where();
@@ -122,7 +122,7 @@ public class GSP_API implements API {
 					 * joinItem.getTable().getAliasClause().toString() : "");
 					 */
 					// System.out.println(joinItem.getOnCondition());
-					TExpressionParser parser = new TExpressionParser(joinItem.getOnCondition());
+					GSPExpressionParser parser = new GSPExpressionParser(joinItem.getOnCondition());
 					parser.parse();
 					this.from.addJoin(joinItem.getTable().toString(),
 							(joinItem.getTable().getAliasClause() != null)
@@ -227,7 +227,7 @@ public class GSP_API implements API {
 		if (whereClause != null) {
 			TExpression expresion = whereClause.getCondition();
 
-			TExpressionParser parser = new TExpressionParser(expresion);
+			GSPExpressionParser parser = new GSPExpressionParser(expresion);
 			parser.parse();
 
 			this.where.setCondiciones(parser.getCondiciones());
@@ -267,7 +267,7 @@ public class GSP_API implements API {
 				Having having = new Having();
 				having.setCondicionRaw(expresion.toString());
 
-				TExpressionParser parser = new TExpressionParser(expresion);
+				GSPExpressionParser parser = new GSPExpressionParser(expresion);
 				parser.parse();
 
 				having.setCondiciones(parser.getCondiciones());

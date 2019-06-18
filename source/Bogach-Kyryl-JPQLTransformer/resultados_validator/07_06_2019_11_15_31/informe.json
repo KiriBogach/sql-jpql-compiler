@@ -1,0 +1,827 @@
+{
+   "resultados" : [ {
+      "exito" : true,
+      "mensaje" : "Mismo resultado, cabeceras distintas.",
+      "queryOriginal" : "SELECT actor_id, 'MyFirstValue' AS SomeValue From Actor;",
+      "queryTransformada" : "SELECT actor_id, 'MyFirstValue' FROM ACTOR",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 200,
+      "registrosTransformada" : 200
+   }, {
+      "exito" : true,
+      "mensaje" : "Mismo resultado, cabeceras distintas.",
+      "queryOriginal" : "SELECT actor_id, 1+1 AS TWO From Actor;",
+      "queryTransformada" : "SELECT actor_id, (1 + 1) FROM ACTOR",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 200,
+      "registrosTransformada" : 200
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT actor_id, NOW() From Actor;",
+      "queryTransformada" : "SELECT actor_id, NOW() FROM ACTOR",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 200,
+      "registrosTransformada" : 200
+   }, {
+      "exito" : true,
+      "mensaje" : "Mismo resultado, cabeceras distintas.",
+      "queryOriginal" : "SELECT CURDATE() as date From Actor;",
+      "queryTransformada" : "SELECT CURRENT_DATE FROM ACTOR",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 200,
+      "registrosTransformada" : 200
+   }, {
+      "exito" : true,
+      "mensaje" : "Mismo resultado, cabeceras distintas.",
+      "queryOriginal" : "SELECT PI() as pi_number From Actor;",
+      "queryTransformada" : "SELECT PI() FROM ACTOR",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 200,
+      "registrosTransformada" : 200
+   }, {
+      "exito" : true,
+      "mensaje" : "Mismo resultado, cabeceras distintas.",
+      "queryOriginal" : "SELECT MOD(45,7) From Actor;",
+      "queryTransformada" : "SELECT MOD(45, 7) FROM ACTOR",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 200,
+      "registrosTransformada" : 200
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT SQRT(25) From Actor;",
+      "queryTransformada" : "SELECT SQRT(25) FROM ACTOR",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 200,
+      "registrosTransformada" : 200
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor;",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 200,
+      "registrosTransformada" : 200
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM city;",
+      "queryTransformada" : "SELECT city_id, CITY, last_update, country_id FROM CITY",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 600,
+      "registrosTransformada" : 600
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM city;",
+      "queryTransformada" : "SELECT city_id, CITY, last_update, country_id FROM CITY",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 600,
+      "registrosTransformada" : 600
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor ORDER BY first_name;",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR ORDER BY first_name",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 200,
+      "registrosTransformada" : 200
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor ORDER BY last_name;",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR ORDER BY last_name",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 200,
+      "registrosTransformada" : 200
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor ORDER BY first_name DESC;",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR ORDER BY first_name DESC",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 200,
+      "registrosTransformada" : 200
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor ORDER BY last_name DESC;",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR ORDER BY last_name DESC",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 200,
+      "registrosTransformada" : 200
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT first_name, last_name FROM actor;",
+      "queryTransformada" : "SELECT first_name, last_name FROM ACTOR",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 200,
+      "registrosTransformada" : 200
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT first_name, last_name FROM actor ORDER BY first_name DESC;",
+      "queryTransformada" : "SELECT first_name, last_name FROM ACTOR ORDER BY first_name DESC",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 200,
+      "registrosTransformada" : 200
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor WHERE actor_id > 100;",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR WHERE (actor_id > 100)",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 100,
+      "registrosTransformada" : 100
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor WHERE actor_id < 100;",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR WHERE (actor_id < 100)",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 99,
+      "registrosTransformada" : 99
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT actor_id, first_name, last_name FROM actor WHERE first_name = 'Nick';",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name FROM ACTOR WHERE (first_name = 'Nick')",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 3,
+      "registrosTransformada" : 3
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor WHERE first_name = 'Nick';",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR WHERE (first_name = 'Nick')",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 3,
+      "registrosTransformada" : 3
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT actor_id, first_name, last_name FROM actor WHERE first_name = 'Nick' ORDER BY actor_id DESC;",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name FROM ACTOR WHERE (first_name = 'Nick') ORDER BY actor_id DESC",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 3,
+      "registrosTransformada" : 3
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT actor_id, first_name, last_name FROM actor WHERE actor_id > 100 ORDER BY first_name, last_name DESC;",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name FROM ACTOR WHERE (actor_id > 100) ORDER BY first_name, last_name DESC",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 100,
+      "registrosTransformada" : 100
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor WHERE 1 = 2;",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR WHERE (1 = 2)",
+      "rateExito" : 0.0,
+      "registrosOriginal" : 0,
+      "registrosTransformada" : 0
+   }, {
+      "exito" : true,
+      "mensaje" : "Mismo contenido, distinto orden.",
+      "queryOriginal" : "SELECT rental_date, inventory_id, return_date FROM rental;",
+      "queryTransformada" : "SELECT t0.rental_date, t1.inventory_id, t0.return_date FROM RENTAL t0, INVENTORY t1 WHERE (t1.inventory_id = t0.inventory_id)",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 16044,
+      "registrosTransformada" : 16044
+   }, {
+      "exito" : true,
+      "mensaje" : "Mismo resultado, cabeceras distintas.",
+      "queryOriginal" : "SELECT rental_date AS RentalDate, inventory_id AS FilmListID, return_date AS ReturnDate FROM rental;",
+      "queryTransformada" : "SELECT t0.rental_date, t1.inventory_id, t0.return_date FROM RENTAL t0, INVENTORY t1 WHERE (t1.inventory_id = t0.inventory_id)",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 16044,
+      "registrosTransformada" : 16044
+   }, {
+      "exito" : false,
+      "mensaje" : "Error Validación",
+      "queryOriginal" : "SELECT replacement_cost-rental_rate, film_id AS FilmID, length/60 FROM film;",
+      "queryTransformada" : "SELECT replacement_cost-rental_rate, a.filmId as FilmID, length/60 FROM Film a",
+      "rateExito" : 0.0,
+      "registrosOriginal" : -1,
+      "registrosTransformada" : -1
+   }, {
+      "exito" : false,
+      "mensaje" : "Error Validación",
+      "queryOriginal" : "SELECT replacement_cost-rental_rate AS CostDiff, film_id AS FilmID, length/60 AS TimeinHour FROM film;",
+      "queryTransformada" : "SELECT replacement_cost-rental_rate as CostDiff, a.filmId as FilmID, length/60 as TimeinHour FROM Film a",
+      "rateExito" : 0.0,
+      "registrosOriginal" : -1,
+      "registrosTransformada" : -1
+   }, {
+      "exito" : false,
+      "mensaje" : "Error Validación",
+      "queryOriginal" : "SELECT rental_rate AS RentalRate, rental_rate + 3 * 4 - 1 AS Result1, (rental_rate + 3) * 4 -1 AS Result2, (rental_rate + 3) * (4 -1) AS Result3, rental_rate + (3 * 4) -1 AS Result4 FROM film;",
+      "queryTransformada" : "SELECT a.rentalRate as RentalRate, rental_rate + 3 * 4 - 1 as Result1, FUNC('', rental_rate + 3) as Result2, (rental_rate + 3) as Result3, FUNC('rental_rate + ', 3 * 4) as Result4 FROM Film a",
+      "rateExito" : 0.0,
+      "registrosOriginal" : -1,
+      "registrosTransformada" : -1
+   }, {
+      "exito" : false,
+      "mensaje" : "Error SQL Parser",
+      "queryOriginal" : "SELECT replacement_cost AS ReplacementCost, replacement_cost / 5 AS DecimalRentalRate, replacement_cost DIV 5 AS IntegerRentalRate, replacement_cost % 5 AS RemainderRentalRate FROM film;",
+      "queryTransformada" : "Error SQL Parser",
+      "rateExito" : 0.0,
+      "registrosOriginal" : -1,
+      "registrosTransformada" : -1
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT film_id, description FROM film WHERE rental_rate BETWEEN 0 AND 4 ORDER BY rating;",
+      "queryTransformada" : "SELECT film_id, DESCRIPTION FROM FILM WHERE (rental_rate BETWEEN 0 AND 4) ORDER BY RATING",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 664,
+      "registrosTransformada" : 664
+   }, {
+      "exito" : true,
+      "mensaje" : "Mismo resultado, cabeceras distintas.",
+      "queryOriginal" : "SELECT actor_id, COUNT(*) AS cnt FROM film_actor GROUP BY actor_id ORDER BY cnt;",
+      "queryTransformada" : "SELECT t0.actor_id, COUNT(t1.actor_id) FROM ACTOR t0, film_actor t1 WHERE (t0.actor_id = t1.actor_id) GROUP BY t0.actor_id ORDER BY COUNT(t1.actor_id)",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 200,
+      "registrosTransformada" : 200
+   }, {
+      "exito" : true,
+      "mensaje" : "Mismo resultado, cabeceras distintas.",
+      "queryOriginal" : "SELECT actor_id, MAX(film_id) FROM film_actor GROUP BY actor_id;",
+      "queryTransformada" : "SELECT t0.actor_id, MAX(t2.film_id) FROM ACTOR t0, FILM t2, film_actor t1 WHERE ((t0.actor_id = t1.actor_id) AND (t2.film_id = t1.film_id)) GROUP BY t0.actor_id",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 200,
+      "registrosTransformada" : 200
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT MIN(actor_id) FROM actor WHERE first_name = 'PENELOPE';",
+      "queryTransformada" : "SELECT MIN(actor_id) FROM ACTOR WHERE (first_name = 'PENELOPE')",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 1,
+      "registrosTransformada" : 1
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT actor_id FROM actor WHERE first_name = 'PENELOPE';",
+      "queryTransformada" : "SELECT actor_id FROM ACTOR WHERE (first_name = 'PENELOPE')",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 4,
+      "registrosTransformada" : 4
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor;",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 200,
+      "registrosTransformada" : 200
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM payment;",
+      "queryTransformada" : "SELECT payment_id, AMOUNT, last_update, payment_date, customer_id, rental_id, staff_id FROM PAYMENT",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 16049,
+      "registrosTransformada" : 16049
+   }, {
+      "exito" : true,
+      "mensaje" : "Mismo resultado, cabeceras distintas.",
+      "queryOriginal" : "SELECT amount, ROUND(amount) as Amnt, ROUND(amount,1) as Amnt1, FLOOR(amount) as FloorAmnt, CEILING(amount) as CeilingAmnt From payment;",
+      "queryTransformada" : "SELECT AMOUNT, ROUND(AMOUNT), ROUND(AMOUNT, 1), FLOOR(AMOUNT), CEILING(AMOUNT) FROM PAYMENT",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 16049,
+      "registrosTransformada" : 16049
+   }, {
+      "exito" : false,
+      "mensaje" : "Error Validación",
+      "queryOriginal" : "SELECT ROUND(4.44,1) FROM actor;",
+      "queryTransformada" : "SELECT 44,1) FROM Actor a",
+      "rateExito" : 0.0,
+      "registrosOriginal" : -1,
+      "registrosTransformada" : -1
+   }, {
+      "exito" : true,
+      "mensaje" : "Mismo resultado, cabeceras distintas.",
+      "queryOriginal" : "SELECT CONCAT(first_name, ' ', last_name) AS FullName FROM actor;",
+      "queryTransformada" : "SELECT CONCAT(CONCAT(first_name, ' '), last_name) FROM ACTOR",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 200,
+      "registrosTransformada" : 200
+   }, {
+      "exito" : false,
+      "mensaje" : "Error Validación",
+      "queryOriginal" : "SELECT CONCAT(first_name, ' ', last_name) AS FullName, CONCAT(LEFT(first_name,2), LEFT(last_name,2)) AS FirstInitial FROM actor;",
+      "queryTransformada" : "SELECT CONCAT(a.firstName, ' ', a.lastName) as FullName, CONCAT(LEFT(first_name, 2) as FirstInitial FROM Actor a",
+      "rateExito" : 0.0,
+      "registrosOriginal" : -1,
+      "registrosTransformada" : -1
+   }, {
+      "exito" : true,
+      "mensaje" : "Mismo resultado, cabeceras distintas.",
+      "queryOriginal" : "SELECT rental_date, DAYOFWEEK(rental_date) AS DayOfWeek, QUARTER(rental_date) AS Quarter, WEEK(rental_date) AS Week, MONTHNAME(rental_date) AS MonthName FROM rental;",
+      "queryTransformada" : "SELECT rental_date, DAYOFWEEK(rental_date), QUARTER(rental_date), WEEK(rental_date), MONTHNAME(rental_date) FROM RENTAL",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 16044,
+      "registrosTransformada" : 16044
+   }, {
+      "exito" : false,
+      "mensaje" : "Resultado distinto. Número de filas distintas Rate: 100.0 %",
+      "queryOriginal" : "SELECT DISTINCT first_name FROM actor;",
+      "queryTransformada" : "SELECT first_name FROM ACTOR",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 128,
+      "registrosTransformada" : 200
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT actor_id, first_name, last_name FROM actor WHERE actor_id = 100;",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name FROM ACTOR WHERE (actor_id = 100)",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 1,
+      "registrosTransformada" : 1
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT actor_id, first_name, last_name FROM actor WHERE first_name = 'Nick';",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name FROM ACTOR WHERE (first_name = 'Nick')",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 3,
+      "registrosTransformada" : 3
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT actor_id, first_name, last_name FROM actor WHERE actor_id < 100;",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name FROM ACTOR WHERE (actor_id < 100)",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 99,
+      "registrosTransformada" : 99
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT actor_id, first_name, last_name FROM actor WHERE first_name < 'Nick';",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name FROM ACTOR WHERE (first_name < 'Nick')",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 144,
+      "registrosTransformada" : 144
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT actor_id, first_name, last_name FROM actor WHERE actor_id > 100;",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name FROM ACTOR WHERE (actor_id > 100)",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 100,
+      "registrosTransformada" : 100
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT actor_id, first_name, last_name FROM actor WHERE first_name > 'Nick';",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name FROM ACTOR WHERE (first_name > 'Nick')",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 53,
+      "registrosTransformada" : 53
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT actor_id, first_name, last_name FROM actor WHERE actor_id <= 100;",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name FROM ACTOR WHERE (actor_id <= 100)",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 100,
+      "registrosTransformada" : 100
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT actor_id, first_name, last_name FROM actor WHERE first_name <= 'Nick';",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name FROM ACTOR WHERE (first_name <= 'Nick')",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 147,
+      "registrosTransformada" : 147
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT actor_id, first_name, last_name FROM actor WHERE actor_id >= 100;",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name FROM ACTOR WHERE (actor_id >= 100)",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 101,
+      "registrosTransformada" : 101
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT actor_id, first_name, last_name FROM actor WHERE first_name >= 'Nick';",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name FROM ACTOR WHERE (first_name >= 'Nick')",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 56,
+      "registrosTransformada" : 56
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT actor_id, first_name, last_name FROM actor WHERE actor_id <> 100;",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name FROM ACTOR WHERE (actor_id <> 100)",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 199,
+      "registrosTransformada" : 199
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT actor_id, first_name, last_name FROM actor WHERE first_name != 'Nick';",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name FROM ACTOR WHERE (first_name <> 'Nick')",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 197,
+      "registrosTransformada" : 197
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor WHERE first_name = 'KENNETH';",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR WHERE (first_name = 'KENNETH')",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 4,
+      "registrosTransformada" : 4
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor WHERE first_name = 'KENNETH' AND actor_id < 100;",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR WHERE ((first_name = 'KENNETH') AND (actor_id < 100))",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 3,
+      "registrosTransformada" : 3
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor WHERE first_name = 'KENNETH' AND actor_id < 100 AND last_name = 'TORN';",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR WHERE (((first_name = 'KENNETH') AND (actor_id < 100)) AND (last_name = 'TORN'))",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 1,
+      "registrosTransformada" : 1
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor WHERE first_name = 'KENNETH';",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR WHERE (first_name = 'KENNETH')",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 4,
+      "registrosTransformada" : 4
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor WHERE first_name = 'KENNETH' OR actor_id < 100;",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR WHERE ((first_name = 'KENNETH') OR (actor_id < 100))",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 100,
+      "registrosTransformada" : 100
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor WHERE first_name = 'KENNETH' OR actor_id < 100 OR last_name = 'TEMPLE';",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR WHERE (((first_name = 'KENNETH') OR (actor_id < 100)) OR (last_name = 'TEMPLE'))",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 103,
+      "registrosTransformada" : 103
+   }, {
+      "exito" : false,
+      "mensaje" : "Error SQL Parser",
+      "queryOriginal" : "SELECT actor_id, first_name, last_name FROM actor WHERE NOT actor_id = 5;",
+      "queryTransformada" : "Error SQL Parser",
+      "rateExito" : 0.0,
+      "registrosOriginal" : -1,
+      "registrosTransformada" : -1
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT actor_id, first_name, last_name FROM actor WHERE actor_id <> 5;",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name FROM ACTOR WHERE (actor_id <> 5)",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 199,
+      "registrosTransformada" : 199
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor WHERE first_name = 'KENNETH' AND actor_id < 100 OR last_name = 'TEMPLE';",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR WHERE (((first_name = 'KENNETH') AND (actor_id < 100)) OR (last_name = 'TEMPLE'))",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 7,
+      "registrosTransformada" : 7
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor WHERE first_name = 'KENNETH' OR last_name = 'TEMPLE' AND actor_id < 100;",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR WHERE ((first_name = 'KENNETH') OR ((last_name = 'TEMPLE') AND (actor_id < 100)))",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 5,
+      "registrosTransformada" : 5
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor WHERE (first_name = 'KENNETH' AND actor_id < 100) OR last_name = 'TEMPLE';",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR WHERE (((first_name = 'KENNETH') AND (actor_id < 100)) OR (last_name = 'TEMPLE'))",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 7,
+      "registrosTransformada" : 7
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor WHERE first_name = 'KENNETH' AND (actor_id < 100 OR last_name = 'TEMPLE');",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR WHERE ((first_name = 'KENNETH') AND ((actor_id < 100) OR (last_name = 'TEMPLE')))",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 3,
+      "registrosTransformada" : 3
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor WHERE (first_name = 'KENNETH' OR last_name = 'TEMPLE') AND actor_id < 100;",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR WHERE (((first_name = 'KENNETH') OR (last_name = 'TEMPLE')) AND (actor_id < 100))",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 4,
+      "registrosTransformada" : 4
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor WHERE first_name = 'KENNETH' OR (last_name = 'TEMPLE' AND actor_id < 100);",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR WHERE ((first_name = 'KENNETH') OR ((last_name = 'TEMPLE') AND (actor_id < 100)))",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 5,
+      "registrosTransformada" : 5
+   }, {
+      "exito" : false,
+      "mensaje" : "Error SQL Parser",
+      "queryOriginal" : "SELECT * FROM actor WHERE NOT (first_name = 'KENNETH' OR (last_name = 'TEMPLE' AND actor_id < 100));",
+      "queryTransformada" : "Error SQL Parser",
+      "rateExito" : 0.0,
+      "registrosOriginal" : -1,
+      "registrosTransformada" : -1
+   }, {
+      "exito" : false,
+      "mensaje" : "Error SQL Parser",
+      "queryOriginal" : "SELECT * FROM actor WHERE first_name = 'KENNETH' OR NOT(last_name = 'TEMPLE' AND actor_id < 100);",
+      "queryTransformada" : "Error SQL Parser",
+      "rateExito" : 0.0,
+      "registrosOriginal" : -1,
+      "registrosTransformada" : -1
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor WHERE first_name IN ('NICK','JOHNNY','JOE','VIVIEN');",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR WHERE (first_name IN ('NICK', 'JOHNNY', 'JOE', 'VIVIEN'))",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 8,
+      "registrosTransformada" : 8
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor WHERE actor_id IN (1,2,3,4,5,6,7,8);",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR WHERE (actor_id IN (1, 2, 3, 4, 5, 6, 7, 8))",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 8,
+      "registrosTransformada" : 8
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor WHERE (actor_id = 1 OR actor_id = 2 OR actor_id = 3 OR actor_id = 4 OR actor_id = 5 OR actor_id = 6 OR actor_id = 7 OR actor_id = 8);",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR WHERE ((((((((actor_id = 1) OR (actor_id = 2)) OR (actor_id = 3)) OR (actor_id = 4)) OR (actor_id = 5)) OR (actor_id = 6)) OR (actor_id = 7)) OR (actor_id = 8))",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 8,
+      "registrosTransformada" : 8
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor WHERE actor_id NOT IN (1,2,3,4,5,6,7);",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR WHERE (actor_id NOT IN (1, 2, 3, 4, 5, 6, 7))",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 193,
+      "registrosTransformada" : 193
+   }, {
+      "exito" : false,
+      "mensaje" : "Error Validación",
+      "queryOriginal" : "SELECT * FROM actor WHERE first_name IN ('NICK','JOHNNY','JOE','VIVIEN') OR actor_id IN (41, 107, 166) AND actor_id IN (SELECT actor_id FROM actor WHERE last_name = 'DEGENERES');",
+      "queryTransformada" : "SELECT a FROM Actor a  WHERE a.firstName IN ('NICK','JOHNNY','JOE','VIVIEN') OR a.actorId IN (41, 107, 166) AND a.actorId IN (SELECT a.actorId FROM actor WHERE last_name = 'DEGENERES')",
+      "rateExito" : 0.0,
+      "registrosOriginal" : -1,
+      "registrosTransformada" : -1
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor WHERE actor_id >= 10 AND actor_id <= 20;",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR WHERE ((actor_id >= 10) AND (actor_id <= 20))",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 11,
+      "registrosTransformada" : 11
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor WHERE actor_id BETWEEN 10 AND 20;",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR WHERE (actor_id BETWEEN 10 AND 20)",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 11,
+      "registrosTransformada" : 11
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor WHERE actor_id BETWEEN 11 AND 19;",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR WHERE (actor_id BETWEEN 11 AND 19)",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 9,
+      "registrosTransformada" : 9
+   }, {
+      "exito" : false,
+      "mensaje" : "Error Validación",
+      "queryOriginal" : "SELECT * FROM actor WHERE actor_id NOT BETWEEN 11 AND 19;",
+      "queryTransformada" : "SELECT a FROM Actor a  WHERE actor_id NOT BETWEEN 11 AND 19",
+      "rateExito" : 0.0,
+      "registrosOriginal" : -1,
+      "registrosTransformada" : -1
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor WHERE first_name LIKE 'A%';",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR WHERE first_name LIKE 'A%'",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 13,
+      "registrosTransformada" : 13
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor WHERE first_name LIKE 'AL%';",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR WHERE first_name LIKE 'AL%'",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 5,
+      "registrosTransformada" : 5
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor WHERE first_name LIKE 'A__E';",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR WHERE first_name LIKE 'A__E'",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 1,
+      "registrosTransformada" : 1
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor WHERE first_name LIKE 'A__E%';",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR WHERE first_name LIKE 'A__E%'",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 6,
+      "registrosTransformada" : 6
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM actor WHERE first_name LIKE 'A%E%';",
+      "queryTransformada" : "SELECT actor_id, first_name, last_name, last_update FROM ACTOR WHERE first_name LIKE 'A%E%'",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 9,
+      "registrosTransformada" : 9
+   }, {
+      "exito" : false,
+      "mensaje" : "Error SQL Parser",
+      "queryOriginal" : "SELECT * FROM actor WHERE NOT (first_name LIKE 'A%E%' AND first_name LIKE 'A%');",
+      "queryTransformada" : "Error SQL Parser",
+      "rateExito" : 0.0,
+      "registrosOriginal" : -1,
+      "registrosTransformada" : -1
+   }, {
+      "exito" : true,
+      "mensaje" : "Mismo contenido, distinto orden.",
+      "queryOriginal" : "SELECT city_id FROM address;",
+      "queryTransformada" : "SELECT t0.city_id FROM CITY t0, ADDRESS t1 WHERE (t0.city_id = t1.city_id)",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 603,
+      "registrosTransformada" : 603
+   }, {
+      "exito" : false,
+      "mensaje" : "Error SQL Parser",
+      "queryOriginal" : "SELECT * FROM address WHERE address2 IS NULL;",
+      "queryTransformada" : "Error SQL Parser",
+      "rateExito" : 0.0,
+      "registrosOriginal" : -1,
+      "registrosTransformada" : -1
+   }, {
+      "exito" : false,
+      "mensaje" : "Error SQL Parser",
+      "queryOriginal" : "SELECT * FROM address WHERE address2 IS NOT NULL;",
+      "queryTransformada" : "Error SQL Parser",
+      "rateExito" : 0.0,
+      "registrosOriginal" : -1,
+      "registrosTransformada" : -1
+   }, {
+      "exito" : true,
+      "mensaje" : "Mismo contenido, distinto orden.",
+      "queryOriginal" : "SELECT city_id FROM address ORDER BY district;",
+      "queryTransformada" : "SELECT t0.city_id FROM CITY t0, ADDRESS t1 WHERE (t0.city_id = t1.city_id) ORDER BY t1.DISTRICT",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 603,
+      "registrosTransformada" : 603
+   }, {
+      "exito" : true,
+      "mensaje" : "Mismo contenido, distinto orden.",
+      "queryOriginal" : "SELECT city_id FROM address ORDER BY district DESC;",
+      "queryTransformada" : "SELECT t0.city_id FROM CITY t0, ADDRESS t1 WHERE (t0.city_id = t1.city_id) ORDER BY t1.DISTRICT DESC",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 603,
+      "registrosTransformada" : 603
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT city_id FROM address ORDER BY district, postal_code DESC;",
+      "queryTransformada" : "SELECT t0.city_id FROM CITY t0, ADDRESS t1 WHERE (t0.city_id = t1.city_id) ORDER BY t1.DISTRICT, t1.postal_code DESC",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 603,
+      "registrosTransformada" : 603
+   }, {
+      "exito" : true,
+      "mensaje" : "Mismo resultado, cabeceras distintas.",
+      "queryOriginal" : "SELECT actor_id, CONCAT(first_name, ' ', last_name) AS FullName FROM actor ORDER BY CONCAT(first_name, ' ', last_name);",
+      "queryTransformada" : "SELECT actor_id, CONCAT(CONCAT(first_name, ' '), last_name) FROM ACTOR ORDER BY CONCAT(CONCAT(first_name, ' '), last_name)",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 200,
+      "registrosTransformada" : 200
+   }, {
+      "exito" : true,
+      "mensaje" : "Mismo resultado, cabeceras distintas.",
+      "queryOriginal" : "SELECT actor_id, CONCAT(first_name, ' ', last_name) AS FullName FROM actor ORDER BY FullName;",
+      "queryTransformada" : "SELECT actor_id, CONCAT(CONCAT(first_name, ' '), last_name) FROM ACTOR ORDER BY CONCAT(CONCAT(first_name, ' '), last_name)",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 200,
+      "registrosTransformada" : 200
+   }, {
+      "exito" : true,
+      "mensaje" : "Mismo resultado, cabeceras distintas.",
+      "queryOriginal" : "SELECT actor_id, CONCAT(first_name, ' ', last_name) AS FullName FROM actor ORDER BY 1;",
+      "queryTransformada" : "SELECT actor_id, CONCAT(CONCAT(first_name, ' '), last_name) FROM ACTOR ORDER BY 1",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 200,
+      "registrosTransformada" : 200
+   }, {
+      "exito" : true,
+      "mensaje" : "Mismo resultado, cabeceras distintas.",
+      "queryOriginal" : "SELECT address, city from address JOIN city ON address.city_id = city.city_id;",
+      "queryTransformada" : "SELECT t0.ADDRESS, t1.city_id, t1.CITY, t1.last_update, t1.country_id FROM ADDRESS t0, CITY t2, CITY t1 WHERE ((t1.city_id = t0.city_id) AND (t1.city_id = t2.city_id))",
+      "rateExito" : 0.0,
+      "registrosOriginal" : 603,
+      "registrosTransformada" : 603
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT film.film_id, film.title, film.release_year, actor.actor_id, actor.first_name, actor.last_name FROM film INNER JOIN film_actor ON film.film_id = film_actor.film_id INNER JOIN actor ON actor.actor_id = film_actor.actor_id;",
+      "queryTransformada" : "SELECT t0.film_id, t0.TITLE, t0.release_year, t1.actor_id, t3.first_name, t3.last_name FROM FILM t4, ACTOR t3, film_actor t2, ACTOR t1, FILM t0 WHERE ((((t4.film_id = t2.film_id) AND (t0.film_id = t4.film_id)) AND (t1.actor_id = t2.actor_id)) AND (t3.actor_id = t1.actor_id))",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 5462,
+      "registrosTransformada" : 5462
+   }, {
+      "exito" : true,
+      "mensaje" : "Mismo resultado, cabeceras distintas.",
+      "queryOriginal" : "SELECT actor.first_name, actor.last_name, COUNT(*) FROM film_actor INNER JOIN actor ON film_actor.actor_id = actor.actor_id GROUP BY actor.first_name, actor.last_name;",
+      "queryTransformada" : "SELECT t0.first_name, t0.last_name, COUNT(t1.actor_id) FROM ACTOR t0, ACTOR t2, film_actor t1 WHERE ((t2.actor_id = t1.actor_id) AND (t2.actor_id = t0.actor_id)) GROUP BY t0.first_name, t0.last_name",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 199,
+      "registrosTransformada" : 199
+   }, {
+      "exito" : true,
+      "mensaje" : "Mismo resultado, cabeceras distintas.",
+      "queryOriginal" : "SELECT actor.first_name, actor.last_name, COUNT(*) FROM film_actor INNER JOIN actor ON film_actor.actor_id = actor.actor_id GROUP BY film_actor.actor_id;",
+      "queryTransformada" : "SELECT t0.first_name, t0.last_name, COUNT(t1.actor_id) FROM ACTOR t0, ACTOR t2, film_actor t1 WHERE ((t2.actor_id = t1.actor_id) AND (t2.actor_id = t0.actor_id)) GROUP BY t2.actor_id",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 200,
+      "registrosTransformada" : 200
+   }, {
+      "exito" : true,
+      "mensaje" : "Mismo contenido, distinto orden.",
+      "queryOriginal" : "SELECT actor.first_name, actor.last_name, film_actor.* FROM actor INNER JOIN film_actor ON actor.actor_id = film_actor.actor_id ORDER BY actor_id;",
+      "queryTransformada" : "SELECT t0.first_name, t0.last_name, t1.last_update, t1.actor_id, t1.film_id FROM ACTOR t0, ACTOR t2, film_actor t1 WHERE ((t2.actor_id = t1.actor_id) AND (t0.actor_id = t2.actor_id)) ORDER BY t0.actor_id",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 5462,
+      "registrosTransformada" : 5462
+   }, {
+      "exito" : true,
+      "mensaje" : "Mismo resultado, cabeceras distintas.",
+      "queryOriginal" : "SELECT COUNT(*) FROM city WHERE city_id > 5;",
+      "queryTransformada" : "SELECT COUNT(city_id) FROM CITY WHERE (city_id > 5)",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 1,
+      "registrosTransformada" : 1
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT film.film_id, film_actor.actor_id FROM film INNER JOIN film_actor ON film_actor.film_id = film.film_id WHERE film.film_id = 1;",
+      "queryTransformada" : "SELECT t0.film_id, t1.actor_id FROM FILM t3, film_actor t2, ACTOR t1, FILM t0 WHERE ((t0.film_id = 1) AND (((t3.film_id = t2.film_id) AND (t3.film_id = t0.film_id)) AND (t1.actor_id = t2.actor_id)))",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 10,
+      "registrosTransformada" : 10
+   }, {
+      "exito" : true,
+      "mensaje" : "Resultado idéntico.",
+      "queryOriginal" : "SELECT * FROM film, film_actor WHERE film_actor.film_id = film.film_id;",
+      "queryTransformada" : "SELECT t0.film_id, t0.DESCRIPTION, t0.last_update, t0.LENGTH, t0.RATING, t0.release_year, t0.rental_duration, t0.rental_rate, t0.replacement_cost, t0.special_features, t0.TITLE, t0.language_id, t0.original_language_id, t1.last_update, t1.actor_id, t1.film_id FROM FILM t0, FILM t2, film_actor t1 WHERE ((t2.film_id = t0.film_id) AND (t2.film_id = t1.film_id))",
+      "rateExito" : 1.0,
+      "registrosOriginal" : 5462,
+      "registrosTransformada" : 5462
+   }, {
+      "exito" : true,
+      "mensaje" : "Mismo resultado, cabeceras distintas.",
+      "queryOriginal" : "SELECT address, city from address, city WHERE address.city_id = city.city_id;",
+      "queryTransformada" : "SELECT t0.ADDRESS, t1.city_id, t1.CITY, t1.last_update, t1.country_id FROM ADDRESS t0, CITY t2, CITY t1 WHERE ((t1.city_id = t2.city_id) AND (t1.city_id = t0.city_id))",
+      "rateExito" : 0.0,
+      "registrosOriginal" : 603,
+      "registrosTransformada" : 603
+   } ]
+}

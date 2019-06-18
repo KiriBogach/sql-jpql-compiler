@@ -7,7 +7,7 @@ import elements.Select;
 import elements.Where;
 import exceptions.SQLParserException;
 
-public interface API {
+public interface ParserAPI {
 	public void parse(String sql) throws SQLParserException;
 	public void reset();
 	public Select getSelect();
@@ -15,5 +15,4 @@ public interface API {
 	public Where getWhere();
 	public OrderBy getOrderBy();
 	public GroupBy getGroupBy();
-	
 }

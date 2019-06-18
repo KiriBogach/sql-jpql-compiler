@@ -8,7 +8,7 @@ import transformer.factory.JPQLTransformerFactory;
 import transformer.factory.JPQLTransformers;
 import transformer.service.JPQLTransformer;
 
-public class ClienteMultiple {
+public class ClienteLista {
 
 	public static void main(String[] args) throws SQLParserException {
 

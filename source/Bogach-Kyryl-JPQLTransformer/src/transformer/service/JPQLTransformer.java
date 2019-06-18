@@ -1,4 +1,4 @@
-package transformer.service.gsp;
+package transformer.service;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,59 +11,63 @@ import java.util.TreeMap;
 import elements.CampoFrom;
 import elements.CampoSelect;
 import elements.Condicion;
+import elements.From;
 import elements.FuncionParser;
+import elements.GroupBy;
 import elements.Having;
 import elements.Join;
+import elements.OrderBy;
+import elements.Select;
 import elements.TipoJoin;
+import elements.Where;
 import exceptions.SQLParserException;
 import javafx.util.Pair;
-import transformer.api.gsp.GSP_API;
+import transformer.api.ParserAPI;
 import transformer.factory.JPQLTransformerFactory;
 import transformer.factory.JPQLTransformers;
-import transformer.service.JPQLTransformerBase;
 import utils.Utils;
 import utils.introspection.ClaseJPA;
-import utils.introspection.ClaseJPA.AtributoClaseJPA;
 import utils.introspection.ClassIntrospection;
+import utils.introspection.ClaseJPA.AtributoClaseJPA;
 
-// (?) Sutituir javafx.util.Pair por 
-// https://stackoverflow.com/questions/521171/a-java-collection-of-value-pairs-tuples
-// AbstractMap.SimpleEntry
+public abstract class JPQLTransformer {
 
-public class GSP_JPQLTransformer extends JPQLTransformerBase {
+	// API utilizada por las clases descencientes para rellanar las cláusulas
+	protected ParserAPI api;
+	
+	// Cláusulas
+	protected Select select;
+	protected From from;
+	protected Where where;
+	protected OrderBy orderBy;
+	protected GroupBy groupBy;
 
-	private static final char CARACTER_AUTOINCREMENTAL = 'a';
-	private static final String DIFERENCIADOR = "_";
-	private String diferenciador = "";
-	private char aliasAutoIncrementado;
+	// Variables del alias por defecto
+	protected static final char CARACTER_AUTOINCREMENTAL = 'a';
+	protected static final String DIFERENCIADOR = "_";
+	protected String diferenciador = "";
+	protected char aliasAutoIncrementado;
 
 	// Variables del FROM
-	private TreeMap<String, ClaseJPA> mappingAliasClase;
-	private TreeMap<String, String> mappingNombreBDAlias;
-	private HashMap<String, ClaseJPA> mappingClasesNombreJPA;
-	private LinkedList<String> fromEncontrados;
+	protected TreeMap<String, ClaseJPA> mappingAliasClase;
+	protected TreeMap<String, String> mappingNombreBDAlias;
+	protected HashMap<String, ClaseJPA> mappingClasesNombreJPA;
+	protected LinkedList<String> fromEncontrados;
 
-	// Variables de JOINS
-	private LinkedList<String> joinEncontrados;
+	// Variables de cláusulas restantes
+	protected LinkedList<String> joinEncontrados;
+	protected LinkedList<String> selectEncontrados;
+	protected LinkedList<String> whereEncontrados;
+	protected LinkedList<String> groupByEncontrados;
+	protected LinkedList<String> havingEncontrados;
+	protected LinkedList<String> orderByEncontrados;
 
-	// Variables del SELECT
-	private LinkedList<String> selectEncontrados;
-
-	// Variables del WHERE
-	private LinkedList<String> whereEncontrados;
-
-	// Variables del GROUP BY
-	private LinkedList<String> groupByEncontrados;
-
-	// Variables del HAVING
-	private LinkedList<String> havingEncontrados;
-
-	// Variables del ORDER BY
-	private LinkedList<String> orderByEncontrados;
-
-	public GSP_JPQLTransformer() {
-		super();
-		this.api = new GSP_API();
+	public JPQLTransformer() {
+		this.select = new Select();
+		this.from = new From();
+		this.where = new Where();
+		this.orderBy = new OrderBy();
+		this.groupBy = new GroupBy();
 
 		this.aliasAutoIncrementado = CARACTER_AUTOINCREMENTAL;
 		this.mappingAliasClase = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -98,7 +102,6 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 		this.api.reset();
 	}
 
-	@Override
 	public String transform(String sql) throws SQLParserException {
 		this.reset();
 		this.api.parse(sql);
@@ -333,7 +336,7 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 			this.orderByEncontrados.add(condicion);
 		}
 	}
-	
+
 	private String parseAsterisco(String nombreRaw, String tablaReferida) {
 		return this.parseAsterisco(nombreRaw, tablaReferida, true);
 	}
@@ -504,40 +507,29 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 			}
 			// No hay @OneToOne
 
-			
 			// Miramos @ManyToOne
 			/*
-			atbIzq = claseIzq.getAtributoManyToOne(campoValor);
-			atbDer = claseDer.getAtributoManyToOne(campoValor);
-
-			atbReferenciado = atbIzq != null ? atbIzq : atbDer;
-
-//			System.out.println("campoFuncional: " + campoValor);
-//			System.out.println("atbIzq: " + atbIzq);
-//			System.out.println("atbDer: " + atbDer);
-
-			/*@SuppressWarnings("unused")
-			ClaseJPA claseReferenciada;
-			String tabla;
-			String alias;
-			if (claseFrom.equals(claseDer)) {
-				claseReferenciada = claseIzq;
-				tabla = referenciaIzquierda;
-				alias = referenciaDerecha;
-			} else if (claseFrom.equals(claseIzq)) {
-				claseReferenciada = claseDer;
-				tabla = referenciaDerecha;
-				alias = referenciaIzquierda;
-			} else {
-				// Si no se encuentra el mapping, no se puede hacer y lo saltamos
-				continue;
-			}
-
-			String referencia = "TODO";
-
-			String joinResult = tipoJoinString + " " + tabla + "." + referencia + " " + alias;
-			return new Pair<String, Condicion>(joinResult, condicion);
-			*/
+			 * atbIzq = claseIzq.getAtributoManyToOne(campoValor); atbDer =
+			 * claseDer.getAtributoManyToOne(campoValor);
+			 * 
+			 * atbReferenciado = atbIzq != null ? atbIzq : atbDer;
+			 * 
+			 * // System.out.println("campoFuncional: " + campoValor); //
+			 * System.out.println("atbIzq: " + atbIzq); // System.out.println("atbDer: " +
+			 * atbDer);
+			 * 
+			 * /*@SuppressWarnings("unused") ClaseJPA claseReferenciada; String tabla;
+			 * String alias; if (claseFrom.equals(claseDer)) { claseReferenciada = claseIzq;
+			 * tabla = referenciaIzquierda; alias = referenciaDerecha; } else if
+			 * (claseFrom.equals(claseIzq)) { claseReferenciada = claseDer; tabla =
+			 * referenciaDerecha; alias = referenciaIzquierda; } else { // Si no se
+			 * encuentra el mapping, no se puede hacer y lo saltamos continue; }
+			 * 
+			 * String referencia = "TODO";
+			 * 
+			 * String joinResult = tipoJoinString + " " + tabla + "." + referencia + " " +
+			 * alias; return new Pair<String, Condicion>(joinResult, condicion);
+			 */
 
 		}
 
@@ -704,7 +696,7 @@ public class GSP_JPQLTransformer extends JPQLTransformerBase {
 
 			// Si encontramos una función de agregación ...
 			String agregatteFunction = this.parseAgregatteFunction(condicion);
-			//System.out.println(agregatteFunction);
+			// System.out.println(agregatteFunction);
 			if (agregatteFunction != null) {
 				return agregatteFunction;
 			}
